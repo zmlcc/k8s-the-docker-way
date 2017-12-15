@@ -1,9 +1,8 @@
 
 from collections import defaultdict
 
+import re
 
-FIRST_GAP = 8
-SECOND_GAP = 53
 SPEC_NAME = ["feature-gates", "controllers"]
 class Flag(object):
     def __init__(self, name, typ=None, explanation=None):
@@ -13,19 +12,21 @@ class Flag(object):
         self.ext = ""
         self.tag = None
 
-def parse(ss):
+def parse(ss, first_gap, second_gap):
     flags = []
     with  open(ss) as ff:
         for line in ff:
-            prefix = line[:FIRST_GAP]
+            prefix = line[:first_gap]
             if prefix in ["      --",  "  -v, --", "  -h, --"]:
-                explanation = line[SECOND_GAP:].strip()
-                keyline = line[FIRST_GAP:SECOND_GAP].strip().split()
+                explanation = line[second_gap:].strip()
+                keyline = line[first_gap:second_gap].strip().split()
                 if len(keyline) == 2:
                     flags.append(Flag(keyline[0],  keyline[1], explanation))
                 elif len(keyline) == 1:
                     flags.append(Flag(keyline[0],  None, explanation))
                 else:
+                    print(line)
+                    print(keyline)
                     raise SyntaxError
             elif len(flags) > 0 and flags[-1].name in SPEC_NAME:
                 flags[-1].ext += line
@@ -43,7 +44,6 @@ def get_flag_map(ss):
         for line in ff:
             if line[0] == '-':
                 keyline = line[1:].strip().split()
-                # flags.append(Flag(keyline[0], cur_tag))
                 flag_map[keyline[0]] = cur_tag
             elif line[:3] == "###":
                 cur_tag = line[3:].strip()
@@ -52,9 +52,9 @@ def get_flag_map(ss):
 
 
 
-def process(old_md, new_md, new_flagf, title=None):
+def process(old_md, new_md, new_flagf, flag_gap, title=None):
 
-    flags = parse(new_flagf)
+    flags = parse(new_flagf, flag_gap[0], flag_gap[1])
 
     flag_map = get_flag_map(old_md)
 
@@ -66,6 +66,8 @@ def process(old_md, new_md, new_flagf, title=None):
     for item in flags:
         tag_map[item.tag].append(item)
 
+    if "uncategorized" in tag_map:
+        print("--->>>  Has Uncategorized Tag")
 
     ## write new_md file
     with open(new_md, "w") as ff:
@@ -88,12 +90,33 @@ def process(old_md, new_md, new_flagf, title=None):
                     ff.write(flag.ext)
                     ff.write("```\n")
                 ff.write("\n")
+                
+
+def find_gap(fname):
+    p1 = re.compile("--")
+    p2 = re.compile("  \S")
+    with open(fname) as ff:
+        line = ff.read()
+        return p1.search(line).end(), p2.search(line, 10).end()-1
+
 
 if __name__ == '__main__':
-    FIRST_GAP = 8
-    SECOND_GAP = 53
-    old_md = "./tmp/origin/kube-proxy.md"
-    new_md = "./tmp/v1.8.4/kube-proxy.md"
-    flagf = "./tmp/origin/kube-proxy.flag"
-    title = "A detailed description of the command-line flag of kube-proxy"
-    process(old_md, new_md, flagf, title)
+    # name = "apiserver"
+    # old_md = "./tmp/v1.8.4/%s.md"%(name)
+    # new_md = "./tmp/v1.8.5/%s.md"%(name)
+    # flagf = "./tmp/origin/%s.flag"%(name)
+    # title = "A detailed description of the command-line flag of %s"%(name)
+    # gap = find_gap(flagf)
+    # print(gap)
+
+
+    NL = ["apiserver", "controller-manager", "scheduler", "kubelet", "kube-proxy"]
+
+    for name in NL:
+        old_md = "./tmp/v1.8.4/%s.md"%(name)
+        new_md = "./tmp/v1.8.5/%s.md"%(name)
+        flagf = "./tmp/origin/%s.flag"%(name)
+        title = "A detailed description of the command-line flag of %s"%(name)
+        gap = find_gap(flagf)
+        print(name, gap)
+        process(old_md, new_md, flagf, gap, title)
