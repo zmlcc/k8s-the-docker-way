@@ -20,10 +20,10 @@ def parse(ss, first_gap, second_gap):
             if prefix in ["      --",  "  -v, --", "  -h, --"]:
                 explanation = line[second_gap:].strip()
                 keyline = line[first_gap:second_gap].strip().split()
-                if len(keyline) == 2:
-                    flags.append(Flag(keyline[0],  keyline[1], explanation))
-                elif len(keyline) == 1:
+                if len(keyline) == 1:
                     flags.append(Flag(keyline[0],  None, explanation))
+                elif len(keyline) >= 2:
+                    flags.append(Flag(keyline[0],  ' '.join(keyline[1:]), explanation))
                 else:
                     print(line)
                     print(keyline)
@@ -67,7 +67,8 @@ def process(old_md, new_md, new_flagf, flag_gap, title=None):
         tag_map[item.tag].append(item)
 
     if "uncategorized" in tag_map:
-        print("--->>>  Has Uncategorized Tag")
+        print("--->>>  Has Uncategorized Tag: ", ' '.join(item.name for item in tag_map["uncategorized"]))
+        
 
     ## write new_md file
     with open(new_md, "w") as ff:
@@ -101,20 +102,12 @@ def find_gap(fname):
 
 
 if __name__ == '__main__':
-    # name = "apiserver"
-    # old_md = "./tmp/v1.8.4/%s.md"%(name)
-    # new_md = "./tmp/v1.8.5/%s.md"%(name)
-    # flagf = "./tmp/origin/%s.flag"%(name)
-    # title = "A detailed description of the command-line flag of %s"%(name)
-    # gap = find_gap(flagf)
-    # print(gap)
-
 
     NL = ["apiserver", "controller-manager", "scheduler", "kubelet", "kube-proxy"]
 
     for name in NL:
-        old_md = "./tmp/v1.8.4/%s.md"%(name)
-        new_md = "./tmp/v1.8.5/%s.md"%(name)
+        old_md = "./tmp/v1.9.0.a/%s.md"%(name)
+        new_md = "./tmp/v1.9.0/%s.md"%(name)
         flagf = "./tmp/origin/%s.flag"%(name)
         title = "A detailed description of the command-line flag of %s"%(name)
         gap = find_gap(flagf)
