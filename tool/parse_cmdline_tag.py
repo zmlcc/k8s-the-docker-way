@@ -106,8 +106,8 @@ if __name__ == '__main__':
     NL = ["apiserver", "controller-manager", "scheduler", "kubelet", "kube-proxy"]
 
     for name in NL:
-        old_md = "./tmp/v1.9.0.a/%s.md"%(name)
-        new_md = "./tmp/v1.9.0/%s.md"%(name)
+        old_md = "./tmp/v1.10.0.a/%s.md"%(name)
+        new_md = "./tmp/v1.10.0/%s.md"%(name)
         flagf = "./tmp/origin/%s.flag"%(name)
         title = "A detailed description of the command-line flag of %s"%(name)
         gap = find_gap(flagf)
