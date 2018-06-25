@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     for name in NL:
         old_md = "./tmp/v1.10.0.a/%s.md"%(name)
-        new_md = "./tmp/v1.10.0/%s.md"%(name)
+        new_md = "./tmp/v1.11.0/%s.md"%(name)
         flagf = "./tmp/origin/%s.flag"%(name)
         title = "A detailed description of the command-line flag of %s"%(name)
         gap = find_gap(flagf)

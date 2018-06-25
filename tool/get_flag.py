@@ -32,7 +32,7 @@ if __name__ == '__main__':
         "kube-proxy.flag": "/proxy",
     }
 
-    image = "gcr.io/google-containers/hyperkube:v1.10.0"
+    image = "gcr.io/google-containers/hyperkube:v1.11.0-rc.1"
     fpath = "./tmp/origin"
     for fname, cmd_name in ND.items():
         print(fname)
