@@ -2,11 +2,99 @@ A detailed description of the command-line flag of kube-proxy
 
 
 
-### address
+### Deprecated
 
 - bind-address 0.0.0.0
 
     The IP address for the proxy server to serve on (set to 0.0.0.0 for all IPv4 interfaces and `::` for all IPv6 interfaces) (default 0.0.0.0)
+
+- cluster-cidr string
+
+    The CIDR range of pods in the cluster. When configured, traffic sent to a Service cluster IP from outside this range will be masqueraded and traffic sent from pods to an external LoadBalancer IP will be directed to the respective cluster IP instead
+
+- config-sync-period duration
+
+    How often configuration from the apiserver is refreshed.  Must be greater than 0. (default 15m0s)
+
+- conntrack-max-per-core int32
+
+    Maximum number of NAT connections to track per CPU core (0 to leave the limit as-is and ignore conntrack-min). (default 32768)
+
+- conntrack-min int32
+
+    Minimum number of conntrack entries to allocate, regardless of conntrack-max-per-core (set conntrack-max-per-core=0 to leave the limit as-is). (default 131072)
+
+- conntrack-tcp-timeout-close-wait duration
+
+    NAT timeout for TCP connections in the CLOSE_WAIT state (default 1h0m0s)
+
+- conntrack-tcp-timeout-established duration
+
+    Idle timeout for established TCP connections (0 to leave as-is) (default 24h0m0s)
+
+- feature-gates mapStringBool
+
+    A set of key=value pairs that describe feature gates for alpha/experimental features. Options are:
+```
+APIListChunking=true|false (BETA - default=true)
+APIResponseCompression=true|false (ALPHA - default=false)
+AdvancedAuditing=true|false (BETA - default=true)
+AllAlpha=true|false (ALPHA - default=false)
+AppArmor=true|false (BETA - default=true)
+AttachVolumeLimit=true|false (ALPHA - default=false)
+BalanceAttachedNodeVolumes=true|false (ALPHA - default=false)
+BlockVolume=true|false (ALPHA - default=false)
+CPUManager=true|false (BETA - default=true)
+CRIContainerLogRotation=true|false (BETA - default=true)
+CSIBlockVolume=true|false (ALPHA - default=false)
+CSIPersistentVolume=true|false (BETA - default=true)
+CustomPodDNS=true|false (BETA - default=true)
+CustomResourceSubresources=true|false (BETA - default=true)
+CustomResourceValidation=true|false (BETA - default=true)
+DebugContainers=true|false (ALPHA - default=false)
+DevicePlugins=true|false (BETA - default=true)
+DynamicKubeletConfig=true|false (BETA - default=true)
+DynamicProvisioningScheduling=true|false (ALPHA - default=false)
+EnableEquivalenceClassCache=true|false (ALPHA - default=false)
+ExpandInUsePersistentVolumes=true|false (ALPHA - default=false)
+ExpandPersistentVolumes=true|false (BETA - default=true)
+ExperimentalCriticalPodAnnotation=true|false (ALPHA - default=false)
+ExperimentalHostUserNamespaceDefaulting=true|false (BETA - default=false)
+GCERegionalPersistentDisk=true|false (BETA - default=true)
+HugePages=true|false (BETA - default=true)
+HyperVContainer=true|false (ALPHA - default=false)
+Initializers=true|false (ALPHA - default=false)
+KubeletPluginsWatcher=true|false (ALPHA - default=false)
+LocalStorageCapacityIsolation=true|false (BETA - default=true)
+MountContainers=true|false (ALPHA - default=false)
+MountPropagation=true|false (BETA - default=true)
+PersistentLocalVolumes=true|false (BETA - default=true)
+PodPriority=true|false (BETA - default=true)
+PodReadinessGates=true|false (BETA - default=false)
+PodShareProcessNamespace=true|false (ALPHA - default=false)
+QOSReserved=true|false (ALPHA - default=false)
+ReadOnlyAPIDataVolumes=true|false (DEPRECATED - default=true)
+ResourceLimitsPriorityFunction=true|false (ALPHA - default=false)
+ResourceQuotaScopeSelectors=true|false (ALPHA - default=false)
+RotateKubeletClientCertificate=true|false (BETA - default=true)
+RotateKubeletServerCertificate=true|false (ALPHA - default=false)
+RunAsGroup=true|false (ALPHA - default=false)
+ScheduleDaemonSetPods=true|false (ALPHA - default=false)
+ServiceNodeExclusion=true|false (ALPHA - default=false)
+ServiceProxyAllowExternalIPs=true|false (DEPRECATED - default=false)
+StorageObjectInUseProtection=true|false (default=true)
+StreamingProxyRedirects=true|false (BETA - default=true)
+SupportIPVSProxyMode=true|false (default=true)
+SupportPodPidsLimit=true|false (ALPHA - default=false)
+Sysctls=true|false (BETA - default=true)
+TaintBasedEvictions=true|false (ALPHA - default=false)
+TaintNodesByCondition=true|false (ALPHA - default=false)
+TokenRequest=true|false (ALPHA - default=false)
+TokenRequestProjection=true|false (ALPHA - default=false)
+VolumeScheduling=true|false (BETA - default=true)
+VolumeSubpath=true|false (default=true)
+VolumeSubpathEnvExpansion=true|false (ALPHA - default=false)
+```
 
 - healthz-bind-address 0.0.0.0
 
@@ -16,17 +104,37 @@ A detailed description of the command-line flag of kube-proxy
 
     The port to bind the health check server. Use 0 to disable. (default 10256)
 
-- metrics-bind-address 0.0.0.0
-
-    The IP address and port for the metrics server to serve on (set to 0.0.0.0 for all IPv4 interfaces and `::` for all IPv6 interfaces) (default 127.0.0.1:10249)
-
-
-
-### api
-
 - hostname-override string
 
     If non-empty, will use this string as identification instead of the actual hostname.
+
+- iptables-masquerade-bit int32
+
+    If using the pure iptables proxy, the bit of the fwmark space to mark packets requiring SNAT with.  Must be within the range [0, 31]. (default 14)
+
+- iptables-min-sync-period duration
+
+    The minimum interval of how often the iptables rules can be refreshed as endpoints and services change (e.g. '5s', '1m', '2h22m').
+
+- iptables-sync-period duration
+
+    The maximum interval of how often iptables rules are refreshed (e.g. '5s', '1m', '2h22m').  Must be greater than 0. (default 30s)
+
+- ipvs-exclude-cidrs strings
+
+    A comma-separated list of CIDR's which the ipvs proxier should not touch when cleaning up IPVS rules.
+
+- ipvs-min-sync-period duration
+
+    The minimum interval of how often the ipvs rules can be refreshed as endpoints and services change (e.g. '5s', '1m', '2h22m').
+
+- ipvs-scheduler string
+
+    The ipvs scheduler type when proxy mode is ipvs
+
+- ipvs-sync-period duration
+
+    The maximum interval of how often ipvs rules are refreshed (e.g. '5s', '1m', '2h22m').  Must be greater than 0. (default 30s)
 
 - kube-api-burst int32
 
@@ -40,9 +148,65 @@ A detailed description of the command-line flag of kube-proxy
 
     QPS to use while talking with kubernetes apiserver (default 5)
 
+- kubeconfig string
+
+    Path to kubeconfig file with authorization information (the master location is set by the master flag).
+
+- masquerade-all
+
+    If using the pure iptables proxy, SNAT all traffic sent via Service cluster IPs (this not commonly needed)
+
 - master string
 
     The address of the Kubernetes API server (overrides any value in kubeconfig)
+
+- metrics-bind-address 0.0.0.0
+
+    The IP address and port for the metrics server to serve on (set to 0.0.0.0 for all IPv4 interfaces and `::` for all IPv6 interfaces) (default 127.0.0.1:10249)
+
+- nodeport-addresses strings
+
+    A string slice of values which specify the addresses to use for NodePorts. Values may be valid IP blocks (e.g. 1.2.3.0/24, 1.2.3.4/32). The default empty string slice ([]) means to use all local addresses.
+
+- oom-score-adj int32
+
+    The oom-score-adj value for kube-proxy process. Values must be within the range [-1000, 1000] (default -999)
+
+- profiling
+
+    If true enables profiling via web interface on /debug/pprof handler.
+
+- proxy-mode ProxyMode
+
+    Which proxy mode to use: 'userspace' (older) or 'iptables' (faster) or 'ipvs' (experimental). If blank, use the best-available proxy (currently iptables).  If the iptables proxy is selected, regardless of how, but the system's kernel or iptables versions are insufficient, this always falls back to the userspace proxy.
+
+- proxy-port-range port-range
+
+    Range of host ports (beginPort-endPort, single port or beginPort+offset, inclusive) that may be consumed in order to proxy service traffic. If (unspecified, 0, or 0-0) then ports will be randomly chosen.
+
+- udp-timeout duration
+
+    How long an idle UDP connection will be kept open (e.g. '250ms', '2s').  Must be greater than 0. Only applicable for proxy-mode=userspace (default 250ms)
+
+
+
+### Main
+
+- cleanup
+
+    If true cleanup iptables and ipvs rules and exit.
+
+- cleanup-ipvs
+
+    If true make kube-proxy cleanup ipvs rules before running.  Default is true (default true)
+
+- config string
+
+    The path to the configuration file.
+
+- write-config-to string
+
+    If set, write the default configuration values to this file and exit.
 
 
 
@@ -58,27 +222,43 @@ A detailed description of the command-line flag of kube-proxy
 
 
 
-### config
+### general
 
-- config string
+- help
 
-    The path to the configuration file.
+    help for kube-proxy
 
-- config-sync-period duration
+- log-flush-frequency duration
 
-    How often configuration from the apiserver is refreshed.  Must be greater than 0. (default 15m0s)
+    Maximum number of seconds between log flushes (default 5s)
 
-- kubeconfig string
+- version version[=true]
 
-    Path to kubeconfig file with authorization information (the master location is set by the master flag).
-
-- write-config-to string
-
-    If set, write the default configuration values to this file and exit.
+    Print version information and quit
 
 
 
-### container
+### plugin.admission.defaulttolerationseconds
+
+- default-not-ready-toleration-seconds int
+
+    Indicates the tolerationSeconds of the toleration for notReady:NoExecute that is added by default to every pod that does not already have such a toleration. (default 300)
+
+- default-unreachable-toleration-seconds int
+
+    Indicates the tolerationSeconds of the toleration for unreachable:NoExecute that is added by default to every pod that does not already have such a toleration. (default 300)
+
+
+
+### vendor.cadvisor
+
+- application-metrics-count-limit int
+
+    Max number of application metrics to store (per container) (default 100)
+
+- boot-id-file string
+
+    Comma-separated list of files to check for boot-id. Use the first one that exists. (default "/proc/sys/kernel/random/boot_id")
 
 - container-hints string
 
@@ -120,9 +300,9 @@ A detailed description of the command-line flag of kube-proxy
 
     path to private key (default "key.pem")
 
+- enable-load-reader
 
-
-### event
+    Whether to enable cpu load reader
 
 - event-storage-age-limit string
 
@@ -132,166 +312,6 @@ A detailed description of the command-line flag of kube-proxy
 
     Max number of events to store (per type). Value is a comma separated list of key values, where the keys are event types (e.g.: creation, oom) or "default" and the value is an integer. Default is applied to all non-specified event types (default "default=0")
 
-
-
-### feature
-
-- feature-gates mapStringBool
-
-    A set of key=value pairs that describe feature gates for alpha/experimental features. Options are:
-```
-                                                     APIListChunking=true|false (BETA - default=true)
-                                                     APIResponseCompression=true|false (ALPHA - default=false)
-                                                     AdvancedAuditing=true|false (BETA - default=true)
-                                                     AllAlpha=true|false (ALPHA - default=false)
-                                                     AppArmor=true|false (BETA - default=true)
-                                                     AttachVolumeLimit=true|false (ALPHA - default=false)
-                                                     BalanceAttachedNodeVolumes=true|false (ALPHA - default=false)
-                                                     BlockVolume=true|false (ALPHA - default=false)
-                                                     CPUManager=true|false (BETA - default=true)
-                                                     CRIContainerLogRotation=true|false (BETA - default=true)
-                                                     CSIBlockVolume=true|false (ALPHA - default=false)
-                                                     CSIPersistentVolume=true|false (BETA - default=true)
-                                                     CustomPodDNS=true|false (BETA - default=true)
-                                                     CustomResourceSubresources=true|false (BETA - default=true)
-                                                     CustomResourceValidation=true|false (BETA - default=true)
-                                                     DebugContainers=true|false (ALPHA - default=false)
-                                                     DevicePlugins=true|false (BETA - default=true)
-                                                     DynamicKubeletConfig=true|false (BETA - default=true)
-                                                     DynamicProvisioningScheduling=true|false (ALPHA - default=false)
-                                                     EnableEquivalenceClassCache=true|false (ALPHA - default=false)
-                                                     ExpandInUsePersistentVolumes=true|false (ALPHA - default=false)
-                                                     ExpandPersistentVolumes=true|false (BETA - default=true)
-                                                     ExperimentalCriticalPodAnnotation=true|false (ALPHA - default=false)
-                                                     ExperimentalHostUserNamespaceDefaulting=true|false (BETA - default=false)
-                                                     GCERegionalPersistentDisk=true|false (BETA - default=true)
-                                                     HugePages=true|false (BETA - default=true)
-                                                     HyperVContainer=true|false (ALPHA - default=false)
-                                                     Initializers=true|false (ALPHA - default=false)
-                                                     KubeletPluginsWatcher=true|false (ALPHA - default=false)
-                                                     LocalStorageCapacityIsolation=true|false (BETA - default=true)
-                                                     MountContainers=true|false (ALPHA - default=false)
-                                                     MountPropagation=true|false (BETA - default=true)
-                                                     PersistentLocalVolumes=true|false (BETA - default=true)
-                                                     PodPriority=true|false (BETA - default=true)
-                                                     PodReadinessGates=true|false (BETA - default=false)
-                                                     PodShareProcessNamespace=true|false (ALPHA - default=false)
-                                                     QOSReserved=true|false (ALPHA - default=false)
-                                                     ReadOnlyAPIDataVolumes=true|false (DEPRECATED - default=true)
-                                                     ResourceLimitsPriorityFunction=true|false (ALPHA - default=false)
-                                                     ResourceQuotaScopeSelectors=true|false (ALPHA - default=false)
-                                                     RotateKubeletClientCertificate=true|false (BETA - default=true)
-                                                     RotateKubeletServerCertificate=true|false (ALPHA - default=false)
-                                                     RunAsGroup=true|false (ALPHA - default=false)
-                                                     ScheduleDaemonSetPods=true|false (ALPHA - default=false)
-                                                     ServiceNodeExclusion=true|false (ALPHA - default=false)
-                                                     ServiceProxyAllowExternalIPs=true|false (DEPRECATED - default=false)
-                                                     StorageObjectInUseProtection=true|false (default=true)
-                                                     StreamingProxyRedirects=true|false (BETA - default=true)
-                                                     SupportIPVSProxyMode=true|false (default=true)
-                                                     SupportPodPidsLimit=true|false (ALPHA - default=false)
-                                                     Sysctls=true|false (BETA - default=true)
-                                                     TaintBasedEvictions=true|false (ALPHA - default=false)
-                                                     TaintNodesByCondition=true|false (ALPHA - default=false)
-                                                     TokenRequest=true|false (ALPHA - default=false)
-                                                     TokenRequestProjection=true|false (ALPHA - default=false)
-                                                     VolumeScheduling=true|false (BETA - default=true)
-                                                     VolumeSubpath=true|false (default=true)
-                                                     VolumeSubpathEnvExpansion=true|false (ALPHA - default=false)
-```
-
-
-
-### general
-
-- boot-id-file string
-
-    Comma-separated list of files to check for boot-id. Use the first one that exists. (default "/proc/sys/kernel/random/boot_id")
-
-- cleanup
-
-    If true cleanup iptables and ipvs rules and exit.
-
-- enable-load-reader
-
-    Whether to enable cpu load reader
-
-- help
-
-    help for kube-proxy
-
-- machine-id-file string
-
-    Comma-separated list of files to check for machine-id. Use the first one that exists. (default "/etc/machine-id,/var/lib/dbus/machine-id")
-
-- oom-score-adj int32
-
-    The oom-score-adj value for kube-proxy process. Values must be within the range [-1000, 1000] (default -999)
-
-- version version[=true]
-
-    Print version information and quit
-
-
-
-### limiter
-
-- default-not-ready-toleration-seconds int
-
-    Indicates the tolerationSeconds of the toleration for notReady:NoExecute that is added by default to every pod that does not already have such a toleration. (default 300)
-
-- default-unreachable-toleration-seconds int
-
-    Indicates the tolerationSeconds of the toleration for unreachable:NoExecute that is added by default to every pod that does not already have such a toleration. (default 300)
-
-
-
-### log
-
-- alsologtostderr
-
-    log to standard error as well as files
-
-- log-backtrace-at traceLocation
-
-    when logging hits line file:N, emit a stack trace (default :0)
-
-- log-cadvisor-usage
-
-    Whether to log the usage of the cAdvisor container
-
-- log-dir string
-
-    If non-empty, write log files in this directory
-
-- log-flush-frequency duration
-
-    Maximum number of seconds between log flushes (default 5s)
-
-- logtostderr
-
-    log to standard error instead of files (default true)
-
-- stderrthreshold severity
-
-    logs at or above this threshold go to stderr (default 2)
-
-- v Level
-
-    log level for V logs
-
-- vmodule moduleSpec
-
-    comma-separated list of pattern=N settings for file-filtered logging
-
-
-
-### monitor
-
-- application-metrics-count-limit int
-
-    Max number of application metrics to store (per container) (default 100)
-
 - global-housekeeping-interval duration
 
     Interval between global housekeepings (default 1m0s)
@@ -300,89 +320,13 @@ A detailed description of the command-line flag of kube-proxy
 
     Interval between container housekeepings (default 10s)
 
+- log-cadvisor-usage
 
+    Whether to log the usage of the cAdvisor container
 
-### network
+- machine-id-file string
 
-- cleanup-ipvs
-
-    If true make kube-proxy cleanup ipvs rules before running.  Default is true (default true)
-
-- cluster-cidr string
-
-    The CIDR range of pods in the cluster. When configured, traffic sent to a Service cluster IP from outside this range will be masqueraded and traffic sent from pods to an external LoadBalancer IP will be directed to the respective cluster IP instead
-
-- conntrack-max-per-core int32
-
-    Maximum number of NAT connections to track per CPU core (0 to leave the limit as-is and ignore conntrack-min). (default 32768)
-
-- conntrack-min int32
-
-    Minimum number of conntrack entries to allocate, regardless of conntrack-max-per-core (set conntrack-max-per-core=0 to leave the limit as-is). (default 131072)
-
-- conntrack-tcp-timeout-close-wait duration
-
-    NAT timeout for TCP connections in the CLOSE_WAIT state (default 1h0m0s)
-
-- conntrack-tcp-timeout-established duration
-
-    Idle timeout for established TCP connections (0 to leave as-is) (default 24h0m0s)
-
-- iptables-masquerade-bit int32
-
-    If using the pure iptables proxy, the bit of the fwmark space to mark packets requiring SNAT with.  Must be within the range [0, 31]. (default 14)
-
-- iptables-min-sync-period duration
-
-    The minimum interval of how often the iptables rules can be refreshed as endpoints and services change (e.g. '5s', '1m', '2h22m').
-
-- iptables-sync-period duration
-
-    The maximum interval of how often iptables rules are refreshed (e.g. '5s', '1m', '2h22m').  Must be greater than 0. (default 30s)
-
-- ipvs-min-sync-period duration
-
-    The minimum interval of how often the ipvs rules can be refreshed as endpoints and services change (e.g. '5s', '1m', '2h22m').
-
-- ipvs-scheduler string
-
-    The ipvs scheduler type when proxy mode is ipvs
-
-- ipvs-sync-period duration
-
-    The maximum interval of how often ipvs rules are refreshed (e.g. '5s', '1m', '2h22m').  Must be greater than 0. (default 30s)
-
-- masquerade-all
-
-    If using the pure iptables proxy, SNAT all traffic sent via Service cluster IPs (this not commonly needed)
-
-- nodeport-addresses strings
-
-    A string slice of values which specify the addresses to use for NodePorts. Values may be valid IP blocks (e.g. 1.2.3.0/24, 1.2.3.4/32). The default empty string slice ([]) means to use all local addresses.
-
-- proxy-mode ProxyMode
-
-    Which proxy mode to use: 'userspace' (older) or 'iptables' (faster) or 'ipvs' (experimental). If blank, use the best-available proxy (currently iptables).  If the iptables proxy is selected, regardless of how, but the system's kernel or iptables versions are insufficient, this always falls back to the userspace proxy.
-
-- proxy-port-range port-range
-
-    Range of host ports (beginPort-endPort, single port or beginPort+offset, inclusive) that may be consumed in order to proxy service traffic. If (unspecified, 0, or 0-0) then ports will be randomly chosen.
-
-- udp-timeout duration
-
-    How long an idle UDP connection will be kept open (e.g. '250ms', '2s').  Must be greater than 0. Only applicable for proxy-mode=userspace (default 250ms)
-
-
-
-### profiling
-
-- profiling
-
-    If true enables profiling via web interface on /debug/pprof handler.
-
-
-
-### storage
+    Comma-separated list of files to check for machine-id. Use the first one that exists. (default "/etc/machine-id,/var/lib/dbus/machine-id")
 
 - storage-driver-buffer-duration duration
 
@@ -414,7 +358,7 @@ A detailed description of the command-line flag of kube-proxy
 
 
 
-### tls
+### vendor.certificate-transparency
 
 - allow-verification-with-non-compliant-keys
 
@@ -422,9 +366,33 @@ A detailed description of the command-line flag of kube-proxy
 
 
 
-### uncategorized
+### vendor.glog
 
-- ipvs-exclude-cidrs strings
+- alsologtostderr
 
-    A comma-separated list of CIDR's which the ipvs proxier should not touch when cleaning up IPVS rules.
+    log to standard error as well as files
+
+- log-backtrace-at traceLocation
+
+    when logging hits line file:N, emit a stack trace (default :0)
+
+- log-dir string
+
+    If non-empty, write log files in this directory
+
+- logtostderr
+
+    log to standard error instead of files (default true)
+
+- stderrthreshold severity
+
+    logs at or above this threshold go to stderr (default 2)
+
+- v Level
+
+    log level for V logs
+
+- vmodule moduleSpec
+
+    comma-separated list of pattern=N settings for file-filtered logging
 

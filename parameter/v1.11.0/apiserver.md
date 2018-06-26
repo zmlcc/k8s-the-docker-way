@@ -2,14 +2,19 @@ A detailed description of the command-line flag of apiserver
 
 
 
-### admission
+### APIEnablement
 
+- runtime-config mapStringString
+
+    A set of key=value pairs that describe runtime configuration that may be passed to apiserver. <group>/<version> (or <version> for the core group) key can be used to turn on/off specific api versions. api/all is special key to control all api versions, be careful setting it false, unless you know what you do. api/legacy is deprecated, we will remove it in the future, so stop using it.
+
+
+
+### Admission
 
 - admission-control strings
 
     Admission is divided into two phases. In the first phase, only mutating admission plugins run. In the second phase, only validating admission plugins run. The names in the below list may represent a validating plugin, a mutating plugin, or both. The order of plugins in which they are passed to this flag does not matter. Comma-delimited list of: AlwaysAdmit, AlwaysDeny, AlwaysPullImages, DefaultStorageClass, DefaultTolerationSeconds, DenyEscalatingExec, DenyExecOnPrivileged, EventRateLimit, ExtendedResourceToleration, ImagePolicyWebhook, Initializers, LimitPodHardAntiAffinityTopology, LimitRanger, MutatingAdmissionWebhook, NamespaceAutoProvision, NamespaceExists, NamespaceLifecycle, NodeRestriction, OwnerReferencesPermissionEnforcement, PersistentVolumeClaimResize, PersistentVolumeLabel, PodNodeSelector, PodPreset, PodSecurityPolicy, PodTolerationRestriction, Priority, ResourceQuota, SecurityContextDeny, ServiceAccount, StorageObjectInUseProtection, ValidatingAdmissionWebhook. (DEPRECATED: Use --enable-admission-plugins or --disable-admission-plugins instead. Will be removed in a future version.)
-
-
 
 - admission-control-config-file string
 
@@ -25,48 +30,7 @@ A detailed description of the command-line flag of apiserver
 
 
 
-### api
-
-- runtime-config mapStringString
-
-    A set of key=value pairs that describe runtime configuration that may be passed to apiserver. <group>/<version> (or <version> for the core group) key can be used to turn on/off specific api versions. api/all is special key to control all api versions, be careful setting it false, unless you know what you do. api/legacy is deprecated, we will remove it in the future, so stop using it.
-
-
-
-### audit
-
-
-- audit-log-truncate-enabled
-
-    Whether event and batch truncating is enabled.
-
-- audit-log-truncate-max-batch-size int
-
-    Maximum size of the batch sent to the underlying backend. Actual serialized size can be several hundreds of bytes greater. If a batch exceeds this limit, it is split into several batches of smaller size. (default 10485760)
-
-- audit-log-truncate-max-event-size int
-
-    Maximum size of the audit event sent to the underlying backend. If the size of an event is greater than this number, first request and response are removed, andif this doesn't reduce the size enough, event is discarded. (default 102400)
-
-- audit-log-version string
-
-    API group and version used for serializing audit events written to log. (default "audit.k8s.io/v1beta1")
-
-- audit-webhook-truncate-enabled
-
-    Whether event and batch truncating is enabled.
-
-- audit-webhook-truncate-max-batch-size int
-
-    Maximum size of the batch sent to the underlying backend. Actual serialized size can be several hundreds of bytes greater. If a batch exceeds this limit, it is split into several batches of smaller size. (default 10485760)
-
-- audit-webhook-truncate-max-event-size int
-
-    Maximum size of the audit event sent to the underlying backend. If the size of an event is greater than this number, first request and response are removed, andif this doesn't reduce the size enough, event is discarded. (default 102400)
-
-- audit-webhook-version string
-
-    API group and version used for serializing audit events written to webhook. (default "audit.k8s.io/v1beta1")
+### Audit
 
 - audit-log-batch-buffer-size int
 
@@ -116,6 +80,22 @@ A detailed description of the command-line flag of apiserver
 
     If set, all requests coming to the apiserver will be logged to this file.  '-' means standard out.
 
+- audit-log-truncate-enabled
+
+    Whether event and batch truncating is enabled.
+
+- audit-log-truncate-max-batch-size int
+
+    Maximum size of the batch sent to the underlying backend. Actual serialized size can be several hundreds of bytes greater. If a batch exceeds this limit, it is split into several batches of smaller size. (default 10485760)
+
+- audit-log-truncate-max-event-size int
+
+    Maximum size of the audit event sent to the underlying backend. If the size of an event is greater than this number, first request and response are removed, andif this doesn't reduce the size enough, event is discarded. (default 102400)
+
+- audit-log-version string
+
+    API group and version used for serializing audit events written to log. (default "audit.k8s.io/v1beta1")
+
 - audit-policy-file string
 
     Path to the file that defines the audit policy configuration. Requires the 'AdvancedAuditing' feature gate. With AdvancedAuditing, a profile is required to enable auditing.
@@ -156,33 +136,49 @@ A detailed description of the command-line flag of apiserver
 
     Strategy for sending audit events. Blocking indicates sending events should block server responses. Batch causes the backend to buffer and write events asynchronously. Known modes are batch,blocking. (default "batch")
 
+- audit-webhook-truncate-enabled
+
+    Whether event and batch truncating is enabled.
+
+- audit-webhook-truncate-max-batch-size int
+
+    Maximum size of the batch sent to the underlying backend. Actual serialized size can be several hundreds of bytes greater. If a batch exceeds this limit, it is split into several batches of smaller size. (default 10485760)
+
+- audit-webhook-truncate-max-event-size int
+
+    Maximum size of the audit event sent to the underlying backend. If the size of an event is greater than this number, first request and response are removed, andif this doesn't reduce the size enough, event is discarded. (default 102400)
+
+- audit-webhook-version string
+
+    API group and version used for serializing audit events written to webhook. (default "audit.k8s.io/v1beta1")
 
 
-### authentication
+
+### Authentication.Anonymous
 
 - anonymous-auth
 
     Enables anonymous requests to the secure port of the API server. Requests that are not rejected by another authentication method are treated as anonymous requests. Anonymous requests have a username of system:anonymous, and a group name of system:unauthenticated. (default true)
 
-- authentication-token-webhook-cache-ttl duration
 
-    The duration to cache responses from the webhook token authenticator. (default 2m0s)
 
-- authentication-token-webhook-config-file string
+### Authentication.BootstrapToken
 
-    File with webhook configuration for token authentication in kubeconfig format. The API server will query the remote service to determine authentication for bearer tokens.
+- enable-bootstrap-token-auth
 
-- basic-auth-file string
+    Enable to allow secrets of type 'bootstrap.kubernetes.io/token' in the 'kube-system' namespace to be used for TLS bootstrapping authentication.
 
-    If set, the file that will be used to admit requests to the secure port of the API server via http basic authentication.
+
+
+### Authentication.ClientCert
 
 - client-ca-file string
 
     If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate.
 
-- enable-bootstrap-token-auth
 
-    Enable to allow secrets of type 'bootstrap.kubernetes.io/token' in the 'kube-system' namespace to be used for TLS bootstrapping authentication.
+
+### Authentication.OIDC
 
 - oidc-ca-file string
 
@@ -204,6 +200,10 @@ A detailed description of the command-line flag of apiserver
 
     The URL of the OpenID issuer, only HTTPS scheme will be accepted. If set, it will be used to verify the OIDC JSON Web Token (JWT).
 
+- oidc-required-claim mapStringString
+
+    A key=value pair that describes a required claim in the ID Token. If set, the claim is verified to be present in the ID Token with a matching value. Repeat this flag to specify multiple claims.
+
 - oidc-signing-algs strings
 
     Comma-separated list of allowed JOSE asymmetric signing algorithms. JWTs with a 'alg' header value not in this list will be rejected. Values are defined by RFC 7518 https://tools.ietf.org/html/rfc7518#section-3.1. (default [RS256])
@@ -217,12 +217,16 @@ A detailed description of the command-line flag of apiserver
     If provided, all usernames will be prefixed with this value. If not provided, username claims other than 'email' are prefixed by the issuer URL to avoid clashes. To skip any prefixing, provide the value '-'.
 
 
-- oidc-required-claim mapStringString
 
-    A key=value pair that describes a required claim in the ID Token. If set, the claim is verified to be present in the ID Token with a matching value. Repeat this flag to specify multiple claims.
+### Authentication.PasswordFile
+
+- basic-auth-file string
+
+    If set, the file that will be used to admit requests to the secure port of the API server via http basic authentication.
 
 
 
+### Authentication.RequestHeader
 
 - requestheader-allowed-names strings
 
@@ -244,6 +248,10 @@ A detailed description of the command-line flag of apiserver
 
     List of request headers to inspect for usernames. X-Remote-User is common.
 
+
+
+### Authentication.ServiceAccounts
+
 - service-account-api-audiences strings
 
     Identifiers of the API. The service account token authenticator will validate that tokens used against the API are bound to at least one of these audiences.
@@ -260,13 +268,29 @@ A detailed description of the command-line flag of apiserver
 
     If true, validate ServiceAccount tokens exist in etcd as part of authentication. (default true)
 
+
+
+### Authentication.TokenFile
+
 - token-auth-file string
 
     If set, the file that will be used to secure the secure port of the API server via token authentication.
 
 
 
-### authorization
+### Authentication.WebHook
+
+- authentication-token-webhook-cache-ttl duration
+
+    The duration to cache responses from the webhook token authenticator. (default 2m0s)
+
+- authentication-token-webhook-config-file string
+
+    File with webhook configuration for token authentication in kubeconfig format. The API server will query the remote service to determine authentication for bearer tokens.
+
+
+
+### Authorization
 
 - authorization-mode strings
 
@@ -290,11 +314,7 @@ A detailed description of the command-line flag of apiserver
 
 
 
-### cloud
-
-- azure-container-registry-config string
-
-    Path to the file containing Azure container registry configuration information.
+### CloudProvider
 
 - cloud-config string
 
@@ -304,41 +324,9 @@ A detailed description of the command-line flag of apiserver
 
     The provider for cloud services. Empty string for no provider.
 
-- cloud-provider-gce-lb-src-cidrs cidrs
-
-    CIDRs opened in GCE firewall for LB traffic proxy & health checks (default 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16)
 
 
-
-### cluster
-
-- apiserver-count int
-
-    The number of apiservers running in the cluster, must be a positive number. (In use when --endpoint-reconciler-type=master-count is enabled.) (default 1)
-
-- enable-aggregator-routing
-
-    Turns on aggregator routing requests to endoints IP rather than cluster IP.
-
-- endpoint-reconciler-type string
-
-    Use an endpoint reconciler (master-count, lease, none) (default "lease")
-
-
-
-### default
-
-- help
-
-    help for kube-apiserver
-
-- version version[=true]
-
-    Print version information and quit
-
-
-
-### etcd
+### Etcd
 
 - default-watch-cache-size int
 
@@ -410,15 +398,79 @@ A detailed description of the command-line flag of apiserver
 
 
 
-### feature
+### FeatureGate
+
+- feature-gates mapStringBool
+
+    A set of key=value pairs that describe feature gates for alpha/experimental features. Options are:
+```
+APIListChunking=true|false (BETA - default=true)
+APIResponseCompression=true|false (ALPHA - default=false)
+AdvancedAuditing=true|false (BETA - default=true)
+AllAlpha=true|false (ALPHA - default=false)
+AppArmor=true|false (BETA - default=true)
+AttachVolumeLimit=true|false (ALPHA - default=false)
+BalanceAttachedNodeVolumes=true|false (ALPHA - default=false)
+BlockVolume=true|false (ALPHA - default=false)
+CPUManager=true|false (BETA - default=true)
+CRIContainerLogRotation=true|false (BETA - default=true)
+CSIBlockVolume=true|false (ALPHA - default=false)
+CSIPersistentVolume=true|false (BETA - default=true)
+CustomPodDNS=true|false (BETA - default=true)
+CustomResourceSubresources=true|false (BETA - default=true)
+CustomResourceValidation=true|false (BETA - default=true)
+DebugContainers=true|false (ALPHA - default=false)
+DevicePlugins=true|false (BETA - default=true)
+DynamicKubeletConfig=true|false (BETA - default=true)
+DynamicProvisioningScheduling=true|false (ALPHA - default=false)
+EnableEquivalenceClassCache=true|false (ALPHA - default=false)
+ExpandInUsePersistentVolumes=true|false (ALPHA - default=false)
+ExpandPersistentVolumes=true|false (BETA - default=true)
+ExperimentalCriticalPodAnnotation=true|false (ALPHA - default=false)
+ExperimentalHostUserNamespaceDefaulting=true|false (BETA - default=false)
+GCERegionalPersistentDisk=true|false (BETA - default=true)
+HugePages=true|false (BETA - default=true)
+HyperVContainer=true|false (ALPHA - default=false)
+Initializers=true|false (ALPHA - default=false)
+KubeletPluginsWatcher=true|false (ALPHA - default=false)
+LocalStorageCapacityIsolation=true|false (BETA - default=true)
+MountContainers=true|false (ALPHA - default=false)
+MountPropagation=true|false (BETA - default=true)
+PersistentLocalVolumes=true|false (BETA - default=true)
+PodPriority=true|false (BETA - default=true)
+PodReadinessGates=true|false (BETA - default=false)
+PodShareProcessNamespace=true|false (ALPHA - default=false)
+QOSReserved=true|false (ALPHA - default=false)
+ReadOnlyAPIDataVolumes=true|false (DEPRECATED - default=true)
+ResourceLimitsPriorityFunction=true|false (ALPHA - default=false)
+ResourceQuotaScopeSelectors=true|false (ALPHA - default=false)
+RotateKubeletClientCertificate=true|false (BETA - default=true)
+RotateKubeletServerCertificate=true|false (ALPHA - default=false)
+RunAsGroup=true|false (ALPHA - default=false)
+ScheduleDaemonSetPods=true|false (ALPHA - default=false)
+ServiceNodeExclusion=true|false (ALPHA - default=false)
+ServiceProxyAllowExternalIPs=true|false (DEPRECATED - default=false)
+StorageObjectInUseProtection=true|false (default=true)
+StreamingProxyRedirects=true|false (BETA - default=true)
+SupportIPVSProxyMode=true|false (default=true)
+SupportPodPidsLimit=true|false (ALPHA - default=false)
+Sysctls=true|false (BETA - default=true)
+TaintBasedEvictions=true|false (ALPHA - default=false)
+TaintNodesByCondition=true|false (ALPHA - default=false)
+TokenRequest=true|false (ALPHA - default=false)
+TokenRequestProjection=true|false (ALPHA - default=false)
+VolumeScheduling=true|false (BETA - default=true)
+VolumeSubpath=true|false (default=true)
+VolumeSubpathEnvExpansion=true|false (ALPHA - default=false)
+```
+
+
+
+### Features
 
 - contention-profiling
 
     Enable lock contention profiling, if profiling is enabled
-
-- enable-logs-handler
-
-    If true, install a /logs handler for the apiserver logs. (default true)
 
 - enable-swagger-ui
 
@@ -430,7 +482,7 @@ A detailed description of the command-line flag of apiserver
 
 
 
-### generic
+### GenericServerRun
 
 - advertise-address ip
 
@@ -443,74 +495,6 @@ A detailed description of the command-line flag of apiserver
 - external-hostname string
 
     The hostname to use when generating externalized URLs for this master (e.g. Swagger API Docs).
-
-- feature-gates mapStringBool
-
-    A set of key=value pairs that describe feature gates for alpha/experimental features. Options are:
-```
-                                                                APIListChunking=true|false (BETA - default=true)
-                                                                APIResponseCompression=true|false (ALPHA - default=false)
-                                                                AdvancedAuditing=true|false (BETA - default=true)
-                                                                AllAlpha=true|false (ALPHA - default=false)
-                                                                AppArmor=true|false (BETA - default=true)
-                                                                AttachVolumeLimit=true|false (ALPHA - default=false)
-                                                                BalanceAttachedNodeVolumes=true|false (ALPHA - default=false)
-                                                                BlockVolume=true|false (ALPHA - default=false)
-                                                                CPUManager=true|false (BETA - default=true)
-                                                                CRIContainerLogRotation=true|false (BETA - default=true)
-                                                                CSIBlockVolume=true|false (ALPHA - default=false)
-                                                                CSIPersistentVolume=true|false (BETA - default=true)
-                                                                CustomPodDNS=true|false (BETA - default=true)
-                                                                CustomResourceSubresources=true|false (BETA - default=true)
-                                                                CustomResourceValidation=true|false (BETA - default=true)
-                                                                DebugContainers=true|false (ALPHA - default=false)
-                                                                DevicePlugins=true|false (BETA - default=true)
-                                                                DynamicKubeletConfig=true|false (BETA - default=true)
-                                                                DynamicProvisioningScheduling=true|false (ALPHA - default=false)
-                                                                EnableEquivalenceClassCache=true|false (ALPHA - default=false)
-                                                                ExpandInUsePersistentVolumes=true|false (ALPHA - default=false)
-                                                                ExpandPersistentVolumes=true|false (BETA - default=true)
-                                                                ExperimentalCriticalPodAnnotation=true|false (ALPHA - default=false)
-                                                                ExperimentalHostUserNamespaceDefaulting=true|false (BETA - default=false)
-                                                                GCERegionalPersistentDisk=true|false (BETA - default=true)
-                                                                HugePages=true|false (BETA - default=true)
-                                                                HyperVContainer=true|false (ALPHA - default=false)
-                                                                Initializers=true|false (ALPHA - default=false)
-                                                                KubeletPluginsWatcher=true|false (ALPHA - default=false)
-                                                                LocalStorageCapacityIsolation=true|false (BETA - default=true)
-                                                                MountContainers=true|false (ALPHA - default=false)
-                                                                MountPropagation=true|false (BETA - default=true)
-                                                                PersistentLocalVolumes=true|false (BETA - default=true)
-                                                                PodPriority=true|false (BETA - default=true)
-                                                                PodReadinessGates=true|false (BETA - default=false)
-                                                                PodShareProcessNamespace=true|false (ALPHA - default=false)
-                                                                QOSReserved=true|false (ALPHA - default=false)
-                                                                ReadOnlyAPIDataVolumes=true|false (DEPRECATED - default=true)
-                                                                ResourceLimitsPriorityFunction=true|false (ALPHA - default=false)
-                                                                ResourceQuotaScopeSelectors=true|false (ALPHA - default=false)
-                                                                RotateKubeletClientCertificate=true|false (BETA - default=true)
-                                                                RotateKubeletServerCertificate=true|false (ALPHA - default=false)
-                                                                RunAsGroup=true|false (ALPHA - default=false)
-                                                                ScheduleDaemonSetPods=true|false (ALPHA - default=false)
-                                                                ServiceNodeExclusion=true|false (ALPHA - default=false)
-                                                                ServiceProxyAllowExternalIPs=true|false (DEPRECATED - default=false)
-                                                                StorageObjectInUseProtection=true|false (default=true)
-                                                                StreamingProxyRedirects=true|false (BETA - default=true)
-                                                                SupportIPVSProxyMode=true|false (default=true)
-                                                                SupportPodPidsLimit=true|false (ALPHA - default=false)
-                                                                Sysctls=true|false (BETA - default=true)
-                                                                TaintBasedEvictions=true|false (ALPHA - default=false)
-                                                                TaintNodesByCondition=true|false (ALPHA - default=false)
-                                                                TokenRequest=true|false (ALPHA - default=false)
-                                                                TokenRequestProjection=true|false (ALPHA - default=false)
-                                                                VolumeScheduling=true|false (BETA - default=true)
-                                                                VolumeSubpath=true|false (default=true)
-                                                                VolumeSubpathEnvExpansion=true|false (ALPHA - default=false)
-```
-
-- log-flush-frequency duration
-
-    Maximum number of seconds between log flushes (default 5s)
 
 - master-service-namespace string
 
@@ -535,6 +519,110 @@ A detailed description of the command-line flag of apiserver
 - target-ram-mb int
 
     Memory limit for apiserver in MB (used to configure sizes of caches, etc.)
+
+
+
+### InsecureServing
+
+- insecure-bind-address ip
+
+    The IP address on which to serve the --insecure-port (set to 0.0.0.0 for all IPv4 interfaces and :: for all IPv6 interfaces). (default 127.0.0.1) (DEPRECATED: This flag will be removed in a future version.)
+
+- insecure-port int
+
+    The port on which to serve unsecured, unauthenticated access. It is assumed that firewall rules are set up such that this port is not reachable from outside of the cluster and that port 443 on the cluster's public address is proxied to this port. This is performed by nginx in the default setup. Set to zero to disable. (default 8080) (DEPRECATED: This flag will be removed in a future version.)
+
+
+
+### SecureServing
+
+- bind-address ip
+
+    The IP address on which to listen for the --secure-port port. The associated interface(s) must be reachable by the rest of the cluster, and by CLI/web clients. If blank, all interfaces will be used (0.0.0.0 for all IPv4 interfaces and :: for all IPv6 interfaces). (default 0.0.0.0)
+
+- cert-dir string
+
+    The directory where the TLS certs are located. If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored. (default "/var/run/kubernetes")
+
+- http2-max-streams-per-connection int
+
+    The limit that the server gives to clients for the maximum number of streams in an HTTP/2 connection. Zero means to use golang's default.
+
+- secure-port int
+
+    The port on which to serve HTTPS with authentication and authorization. If 0, don't serve HTTPS at all. (default 6443)
+
+- tls-cert-file string
+
+    File containing the default x509 Certificate for HTTPS. (CA cert, if any, concatenated after server cert). If HTTPS serving is enabled, and --tls-cert-file and --tls-private-key-file are not provided, a self-signed certificate and key are generated for the public address and saved to the directory specified by --cert-dir.
+
+- tls-cipher-suites strings
+
+    Comma-separated list of cipher suites for the server. If omitted, the default Go cipher suites will be use.  Possible values: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_RC4_128_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_RC4_128_SHA
+
+- tls-min-version string
+
+    Minimum TLS version supported. Possible values: VersionTLS10, VersionTLS11, VersionTLS12
+
+- tls-private-key-file string
+
+    File containing the default x509 private key matching --tls-cert-file.
+
+- tls-sni-cert-key namedCertKey
+
+    A pair of x509 certificate and private key file paths, optionally suffixed with a list of domain patterns which are fully qualified domain names, possibly with prefixed wildcard segments. If no domain patterns are provided, the names of the certificate are extracted. Non-wildcard matches trump over wildcard matches, explicit domain patterns trump over extracted names. For multiple key/certificate pairs, use the --tls-sni-cert-key multiple times. Examples: "example.crt,example.key" or "foo.crt,foo.key:*.foo.com,foo.com". (default [])
+
+
+
+### StorageSerialization
+
+- storage-versions string
+
+    The per-group version to store resources in. Specified in the format "group1/version1,group2/version2,...". In the case where objects are moved from one group to the other, you may specify the format "group1=group2/v1beta1,group3/v1beta1,...". You only need to pass the groups you wish to change from the defaults. It defaults to a list of preferred versions of all known groups. (default "admission.k8s.io/v1beta1,admissionregistration.k8s.io/v1beta1,apps/v1,authentication.k8s.io/v1,authorization.k8s.io/v1,autoscaling/v1,batch/v1,certificates.k8s.io/v1beta1,componentconfig/v1alpha1,events.k8s.io/v1beta1,extensions/v1beta1,imagepolicy.k8s.io/v1alpha1,networking.k8s.io/v1,policy/v1beta1,rbac.authorization.k8s.io/v1,scheduling.k8s.io/v1beta1,settings.k8s.io/v1alpha1,storage.k8s.io/v1,v1")
+
+
+
+### cloud
+
+- azure-container-registry-config string
+
+    Path to the file containing Azure container registry configuration information.
+
+- cloud-provider-gce-lb-src-cidrs cidrs
+
+    CIDRs opened in GCE firewall for LB traffic proxy & health checks (default 130.211.0.0/22,209.85.152.0/22,209.85.204.0/22,35.191.0.0/16)
+
+
+
+### cluster
+
+- apiserver-count int
+
+    The number of apiservers running in the cluster, must be a positive number. (In use when --endpoint-reconciler-type=master-count is enabled.) (default 1)
+
+- enable-aggregator-routing
+
+    Turns on aggregator routing requests to endoints IP rather than cluster IP.
+
+- endpoint-reconciler-type string
+
+    Use an endpoint reconciler (master-count, lease, none) (default "lease")
+
+
+
+### general
+
+- help
+
+    help for kube-apiserver
+
+- log-flush-frequency duration
+
+    Maximum number of seconds between log flushes (default 5s)
+
+- version version[=true]
+
+    Print version information and quit
 
 
 
@@ -575,6 +663,10 @@ A detailed description of the command-line flag of apiserver
 - allow-privileged
 
     If true, allow privileged containers. [default=false]
+
+- enable-logs-handler
+
+    If true, install a /logs handler for the apiserver logs. (default true)
 
 - event-ttl duration
 
@@ -623,65 +715,6 @@ A detailed description of the command-line flag of apiserver
 - service-node-port-range portRange
 
     A port range to reserve for services with NodePort visibility. Example: '30000-32767'. Inclusive at both ends of the range. (default 30000-32767)
-
-
-
-### serving
-
-
-- insecure-bind-address ip
-
-    The IP address on which to serve the --insecure-port (set to 0.0.0.0 for all IPv4 interfaces and :: for all IPv6 interfaces). (default 127.0.0.1) (DEPRECATED: This flag will be removed in a future version.)
-
-- insecure-port int
-
-    The port on which to serve unsecured, unauthenticated access. It is assumed that firewall rules are set up such that this port is not reachable from outside of the cluster and that port 443 on the cluster's public address is proxied to this port. This is performed by nginx in the default setup. Set to zero to disable. (default 8080) (DEPRECATED: This flag will be removed in a future version.)
-
-
-
-- bind-address ip
-
-    The IP address on which to listen for the --secure-port port. The associated interface(s) must be reachable by the rest of the cluster, and by CLI/web clients. If blank, all interfaces will be used (0.0.0.0 for all IPv4 interfaces and :: for all IPv6 interfaces). (default 0.0.0.0)
-
-- cert-dir string
-
-    The directory where the TLS certs are located. If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored. (default "/var/run/kubernetes")
-
-- http2-max-streams-per-connection int
-
-    The limit that the server gives to clients for the maximum number of streams in an HTTP/2 connection. Zero means to use golang's default.
-
-- secure-port int
-
-    The port on which to serve HTTPS with authentication and authorization. If 0, don't serve HTTPS at all. (default 6443)
-
-- tls-cert-file string
-
-    File containing the default x509 Certificate for HTTPS. (CA cert, if any, concatenated after server cert). If HTTPS serving is enabled, and --tls-cert-file and --tls-private-key-file are not provided, a self-signed certificate and key are generated for the public address and saved to the directory specified by --cert-dir.
-
-- tls-cipher-suites strings
-
-    Comma-separated list of cipher suites for the server. If omitted, the default Go cipher suites will be use.  Possible values: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_RSA_WITH_RC4_128_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_RC4_128_SHA
-
-- tls-min-version string
-
-    Minimum TLS version supported. Possible values: VersionTLS10, VersionTLS11, VersionTLS12
-
-- tls-private-key-file string
-
-    File containing the default x509 private key matching --tls-cert-file.
-
-- tls-sni-cert-key namedCertKey
-
-    A pair of x509 certificate and private key file paths, optionally suffixed with a list of domain patterns which are fully qualified domain names, possibly with prefixed wildcard segments. If no domain patterns are provided, the names of the certificate are extracted. Non-wildcard matches trump over wildcard matches, explicit domain patterns trump over extracted names. For multiple key/certificate pairs, use the --tls-sni-cert-key multiple times. Examples: "example.crt,example.key" or "foo.crt,foo.key:*.foo.com,foo.com". (default [])
-
-
-
-### storage_serialization
-
-- storage-versions string
-
-    The per-group version to store resources in. Specified in the format "group1/version1,group2/version2,...". In the case where objects are moved from one group to the other, you may specify the format "group1=group2/v1beta1,group3/v1beta1,...". You only need to pass the groups you wish to change from the defaults. It defaults to a list of preferred versions of all known groups. (default "admission.k8s.io/v1beta1,admissionregistration.k8s.io/v1beta1,apps/v1,authentication.k8s.io/v1,authorization.k8s.io/v1,autoscaling/v1,batch/v1,certificates.k8s.io/v1beta1,componentconfig/v1alpha1,events.k8s.io/v1beta1,extensions/v1beta1,imagepolicy.k8s.io/v1alpha1,networking.k8s.io/v1,policy/v1beta1,rbac.authorization.k8s.io/v1,scheduling.k8s.io/v1beta1,settings.k8s.io/v1alpha1,storage.k8s.io/v1,v1")
 
 
 

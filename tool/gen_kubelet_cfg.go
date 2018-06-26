@@ -7,22 +7,20 @@ import (
 
 	"github.com/ghodss/yaml"
 	"k8s.io/kubernetes/cmd/kubelet/app/options"
-	"k8s.io/kubernetes/pkg/kubelet/apis/kubeletconfig/v1beta1"
 )
 
 func main() {
-	aaa := new(v1beta1.KubeletConfiguration)
-	aaa.FeatureGates = make(map[string]bool)
-	aaa.FeatureGates["abd"] = true
-	ccc, _ := yaml.Marshal(aaa)
-	fmt.Printf("%s", ccc)
+	// aaa := new(v1beta1.KubeletConfiguration)
+	// aaa.FeatureGates = make(map[string]bool)
+	// aaa.FeatureGates["abd"] = true
+	// ccc, _ := yaml.Marshal(aaa)
+	// fmt.Printf("%s", ccc)
 
-	fmt.Println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+	// fmt.Println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
 	kc, _ := options.NewKubeletConfiguration()
 	kc.FeatureGates = make(map[string]bool)
 
-	kc.FeatureGates["Fuck"] = true
 	// kc := &v1beta1.KubeletConfiguration{}
 	ddd, _ := yaml.Marshal(kc)
 	fmt.Printf("%s", ddd)

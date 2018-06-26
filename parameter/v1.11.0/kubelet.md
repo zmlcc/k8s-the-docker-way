@@ -2,39 +2,7 @@ A detailed description of the command-line flag of kubelet
 
 
 
-### cadvisor
-
-- docker-root string
-
-    DEPRECATED: docker root is read from docker info (this is a fallback, default: /var/lib/docker) (default "/var/lib/docker")
-
-- housekeeping-interval duration
-
-    Interval between container housekeepings (default 10s)
-
-
-
-### cloud
-
-- azure-container-registry-config string
-
-    Path to the file containing Azure container registry configuration information.
-
-- cloud-config string
-
-    The path to the cloud provider configuration file.  Empty string for no configuration file.
-
-- cloud-provider string
-
-    The provider for cloud services. Specify empty string for running with no cloud provider. If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine if and how the hostname is used).
-
-- provider-id string
-
-    Unique identifier for identifying the node in a machine database, i.e cloudprovider
-
-
-
-### config
+### Config
 
 - bootstrap-checkpoint-path string
 
@@ -48,29 +16,17 @@ A detailed description of the command-line flag of kubelet
 
     The Kubelet will load its initial configuration from this file. The path may be absolute or relative; relative paths start at the Kubelet's current working directory. Omit this flag to use the built-in default configuration values. Command-line flags override configuration from this file.
 
-- dynamic-config-dir string
-
-    The Kubelet will use this directory for checkpointing downloaded configurations and tracking configuration health. The Kubelet will create this directory if it does not already exist. The path may be absolute or relative; relative paths start at the Kubelet's current working directory. Providing this flag enables dynamic Kubelet configuration. The DynamicKubeletConfig feature gate must be enabled to pass this flag; this gate currently defaults to true because the feature is beta.
-
-- experimental-bootstrap-kubeconfig string
-
-    (DEPRECATED: Use --bootstrap-kubeconfig)
-
 - kubeconfig string
 
     Path to a kubeconfig file, specifying how to connect to the API server. Providing --kubeconfig enables API server mode, omitting --kubeconfig enables standalone mode.
 
-- rotate-certificates
-
-    <Warning: Beta feature> Auto rotate the kubelet client certificates by requesting new certificates from the kube-apiserver when the certificate expiration approaches. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
 
+### ContainerRuntime.Docker
 
-### container
+- docker-disable-shared-pid
 
-- container-runtime string
-
-    The container runtime to use. Possible values: 'docker', 'remote', 'rkt (deprecated)'. (default "docker")
+    Setting this to false causes Kubernetes to create pods using a shared process namespace for containers in a pod when running with Docker 1.13.1 or higher. A future Kubernetes release will make this configurable instead in the API. This docker-specific flag only works when container-runtime is set to docker. (default true) (DEPRECATED: will be removed in a future release. This option will be replaced by PID namespace sharing that is configurable per-pod using the API. See https://features.k8s.io/495)
 
 - docker-endpoint string
 
@@ -84,137 +40,25 @@ A detailed description of the command-line flag of kubelet
 
     The image whose network/ipc namespaces containers in each pod will use. This docker-specific flag only works when container-runtime is set to docker. (default "k8s.gcr.io/pause:3.1")
 
+
+
+### ContainerRuntime.General
+
+- container-runtime string
+
+    The container runtime to use. Possible values: 'docker', 'remote', 'rkt (deprecated)'. (default "docker")
+
+- redirect-container-streaming
+
+    Enables container streaming redirect. If false, kubelet will proxy container streaming data between apiserver and container runtime; if true, kubelet will return an http redirect to apiserver, and apiserver will access container runtime directly. The proxy approach is more secure, but introduces some overhead. The redirect approach is more performant, but less secure because the connection between apiserver and container runtime may not be authenticated.
+
 - runtime-cgroups string
 
     Optional absolute name of cgroups to create and run the runtime in.
 
 
 
-### default
-
-- help
-
-    help for kubelet
-
-- version version[=true]
-
-    Print version information and quit
-
-
-
-### dir
-
-- cert-dir string
-
-    The directory where the TLS certs are located. If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored. (default "/var/lib/kubelet/pki")
-
-- root-dir string
-
-    Directory path for managing kubelet files (volume mounts,etc). (default "/var/lib/kubelet")
-
-- volume-plugin-dir string
-
-    The full path of the directory in which to search for additional third party volume plugins (default "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/")
-
-
-
-### experimental
-
-- container-runtime-endpoint string
-
-    [Experimental] The endpoint of remote runtime service. Currently unix socket is supported on Linux, and tcp is supported on windows.  Examples:'unix:///var/run/dockershim.sock', 'tcp://localhost:3735' (default "unix:///var/run/dockershim.sock")
-
-- experimental-allocatable-ignore-eviction
-
-    When set to 'true', Hard Eviction Thresholds will be ignored while calculating Node Allocatable. See https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/ for more details. [default=false]
-
-- experimental-check-node-capabilities-before-mount
-
-    [Experimental] if set true, the kubelet will check the underlying node for required components (binaries, etc.) before performing the mount
-
-- experimental-mounter-path string
-
-    [Experimental] Path of mounter binary. Leave empty to use the default mount.
-
-- image-service-endpoint string
-
-    [Experimental] The endpoint of remote image service. If not specified, it will be the same with container-runtime-endpoint by default. Currently unix socket is supported on Linux, and tcp is supported on windows.  Examples:'unix:///var/run/dockershim.sock', 'tcp://localhost:3735'
-
-
-
-### glog
-
-- alsologtostderr
-
-    log to standard error as well as files
-
-- log-backtrace-at traceLocation
-
-    when logging hits line file:N, emit a stack trace (default :0)
-
-- log-dir string
-
-    If non-empty, write log files in this directory
-
-- logtostderr
-
-    log to standard error instead of files (default true)
-
-- stderrthreshold severity
-
-    logs at or above this threshold go to stderr (default 2)
-
-- v Level
-
-    log level for V logs
-
-- vmodule moduleSpec
-
-    comma-separated list of pattern=N settings for file-filtered logging
-
-
-
-### kernel
-
-- experimental-kernel-memcg-notification
-
-    If enabled, the kubelet will integrate with the kernel memcg notification to determine if memory eviction thresholds are crossed rather than polling.
-
-- seccomp-profile-root string
-
-    <Warning: Alpha feature> Directory path for seccomp profiles. (default "/var/lib/kubelet/seccomp")
-
-
-
-### lock
-
-- exit-on-lock-contention
-
-    Whether kubelet should exit upon lock-file contention.
-
-- lock-file string
-
-    <Warning: Alpha feature> The path to file for kubelet to use as a lock file.
-
-
-
-### log
-
-- log-flush-frequency duration
-
-    Maximum number of seconds between log flushes (default 5s)
-
-
-
-### misc
-
-- containerized
-
-    Running kubelet in a container.
-
-
-
-### network
+### ContainerRuntime.Networkplugin
 
 - cni-bin-dir string
 
@@ -234,103 +78,135 @@ A detailed description of the command-line flag of kubelet
 
 
 
-### node
-
-- hostname-override string
-
-    If non-empty, will use this string as identification instead of the actual hostname. If --cloud-provider is set, the cloud provider determines the name of the node (consult cloud provider documentation to determine if and how the hostname is used).
-
-- node-ip string
-
-    IP address of the node. If set, kubelet will use this IP address for the node
-
-- node-labels mapStringString
-
-    <Warning: Alpha feature> Labels to add when registering the node in the cluster.  Labels must be key=value pairs separated by ','.
-
-- register-node
-
-    Register the node with the apiserver. If --kubeconfig is not provided, this flag is irrelevant, as the Kubelet won't have an apiserver to register with. Default=true. (default true)
-
-- register-with-taints []api.Taint
-
-    Register the node with the given list of taints (comma separated "<key>=<value>:<effect>"). No-op if register-node is false.
-
-
-
-### serving
-
-- enable-server
-
-    Enable the Kubelet's server (default true)
-
-- runonce
-
-    If true, exit after spawning pods from static pod files or remote urls. Exclusive with --enable-server
-
-
-
-### test
-
-- chaos-chance float
-
-    If > 0.0, introduce random client errors and latency. Intended for testing.
-
-- really-crash-for-testing
-
-    If true, when panics occur crash. Intended for testing.
-
-
-
-### uncategorized
-
-- address 0.0.0.0
-
-    The IP address for the Kubelet to serve on (set to 0.0.0.0 for all IPv4 interfaces and `::` for all IPv6 interfaces) (default 0.0.0.0) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+### Deprecated
 
 - allow-privileged
 
     If true, allow containers to request privileged mode. Default: true (default true) (DEPRECATED: will be removed in a future version)
 
+- cadvisor-port int32
+
+    The port of the localhost cAdvisor endpoint (set to 0 to disable) (DEPRECATED: The default will change to 0 (disabled) in 1.11, and the cadvisor port will be removed entirely in 1.12)
+
+- experimental-bootstrap-kubeconfig string
+
+    (DEPRECATED: Use --bootstrap-kubeconfig)
+
+- host-ipc-sources strings
+
+    Comma-separated list of sources from which the Kubelet allows pods to use the host ipc namespace. (default [*]) (DEPRECATED: will be removed in a future version)
+
+- host-network-sources strings
+
+    Comma-separated list of sources from which the Kubelet allows pods to use of host network. (default [*]) (DEPRECATED: will be removed in a future version)
+
+- host-pid-sources strings
+
+    Comma-separated list of sources from which the Kubelet allows pods to use the host pid namespace. (default [*]) (DEPRECATED: will be removed in a future version)
+
+- keep-terminated-pod-volumes
+
+    Keep terminated pod volumes mounted to the node after the pod terminates.  Can be useful for debugging volume related issues. (DEPRECATED: will be removed in a future version)
+
+- master-service-namespace string
+
+    The namespace from which the kubernetes master services should be injected into pods (default "default") (DEPRECATED: This flag will be removed in a future version.)
+
+- maximum-dead-containers int32
+
+    Maximum number of old instances of containers to retain globally.  Each container takes up some disk space. To disable, set to a negative number. (default -1) (DEPRECATED: Use --eviction-hard or --eviction-soft instead. Will be removed in a future version.)
+
+- maximum-dead-containers-per-container int32
+
+    Maximum number of old instances to retain per container.  Each container takes up some disk space. (default 1) (DEPRECATED: Use --eviction-hard or --eviction-soft instead. Will be removed in a future version.)
+
+- minimum-container-ttl-duration duration
+
+    Minimum age for a finished container before it is garbage collected.  Examples: '300ms', '10s' or '2h45m' (DEPRECATED: Use --eviction-hard or --eviction-soft instead. Will be removed in a future version.)
+
+- non-masquerade-cidr string
+
+    Traffic to IPs outside this range will use IP masquerade. Set to '0.0.0.0/0' to never masquerade. (default "10.0.0.0/8") (DEPRECATED: will be removed in a future version)
+
+- register-schedulable
+
+    Register the node as schedulable. Won't have any effect if register-node is false. (default true) (DEPRECATED: will be removed in a future version)
+
+
+
+### Dir
+
+- cert-dir string
+
+    The directory where the TLS certs are located. If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored. (default "/var/lib/kubelet/pki")
+
+- dynamic-config-dir string
+
+    The Kubelet will use this directory for checkpointing downloaded configurations and tracking configuration health. The Kubelet will create this directory if it does not already exist. The path may be absolute or relative; relative paths start at the Kubelet's current working directory. Providing this flag enables dynamic Kubelet configuration. The DynamicKubeletConfig feature gate must be enabled to pass this flag; this gate currently defaults to true because the feature is beta.
+
+- root-dir string
+
+    Directory path for managing kubelet files (volume mounts,etc). (default "/var/lib/kubelet")
+
+- volume-plugin-dir string
+
+    The full path of the directory in which to search for additional third party volume plugins (default "/usr/libexec/kubernetes/kubelet-plugins/volume/exec/")
+
+
+
+### Experimental
+
 - allowed-unsafe-sysctls strings
 
     Comma-separated whitelist of unsafe sysctls or unsafe sysctl patterns (ending in *). Use these at your own risk. Sysctls feature gate is enabled by default.
 
-- anonymous-auth
+- container-runtime-endpoint string
 
-    Enables anonymous requests to the Kubelet server. Requests that are not rejected by another authentication method are treated as anonymous requests. Anonymous requests have a username of system:anonymous, and a group name of system:unauthenticated. (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+    [Experimental] The endpoint of remote runtime service. Currently unix socket is supported on Linux, and tcp is supported on windows.  Examples:'unix:///var/run/dockershim.sock', 'tcp://localhost:3735' (default "unix:///var/run/dockershim.sock")
 
-- application-metrics-count-limit int
+- exit-on-lock-contention
 
-    Max number of application metrics to store (per container) (default 100) (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+    Whether kubelet should exit upon lock-file contention.
 
-- authentication-token-webhook
+- experimental-allocatable-ignore-eviction
 
-    Use the TokenReview API to determine authentication for bearer tokens. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+    When set to 'true', Hard Eviction Thresholds will be ignored while calculating Node Allocatable. See https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/ for more details. [default=false]
 
-- authentication-token-webhook-cache-ttl duration
+- experimental-check-node-capabilities-before-mount
 
-    The duration to cache responses from the webhook token authenticator. (default 2m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+    [Experimental] if set true, the kubelet will check the underlying node for required components (binaries, etc.) before performing the mount
 
-- authorization-mode string
+- experimental-kernel-memcg-notification
 
-    Authorization mode for Kubelet server. Valid options are AlwaysAllow or Webhook. Webhook mode uses the SubjectAccessReview API to determine authorization. (default "AlwaysAllow") (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+    If enabled, the kubelet will integrate with the kernel memcg notification to determine if memory eviction thresholds are crossed rather than polling.
 
-- authorization-webhook-cache-authorized-ttl duration
+- experimental-mounter-path string
 
-    The duration to cache 'authorized' responses from the webhook authorizer. (default 5m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+    [Experimental] Path of mounter binary. Leave empty to use the default mount.
 
-- authorization-webhook-cache-unauthorized-ttl duration
+- image-service-endpoint string
 
-    The duration to cache 'unauthorized' responses from the webhook authorizer. (default 30s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+    [Experimental] The endpoint of remote image service. If not specified, it will be the same with container-runtime-endpoint by default. Currently unix socket is supported on Linux, and tcp is supported on windows.  Examples:'unix:///var/run/dockershim.sock', 'tcp://localhost:3735'
 
-- boot-id-file string
+- lock-file string
 
-    Comma-separated list of files to check for boot-id. Use the first one that exists. (default "/proc/sys/kernel/random/boot_id") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+    <Warning: Alpha feature> The path to file for kubelet to use as a lock file.
 
-- cadvisor-port int32
+- node-status-max-images int32
 
-    The port of the localhost cAdvisor endpoint (set to 0 to disable) (DEPRECATED: The default will change to 0 (disabled) in 1.11, and the cadvisor port will be removed entirely in 1.12)
+    <Warning: Alpha feature> The maximum number of images to report in Node.Status.Images. If -1 is specified, no cap will be applied. Default: 50 (default 50)
+
+- seccomp-profile-root string
+
+    <Warning: Alpha feature> Directory path for seccomp profiles. (default "/var/lib/kubelet/seccomp")
+
+
+
+### KubeletConfig
+
+- address 0.0.0.0
+
+    The IP address for the Kubelet to serve on (set to 0.0.0.0 for all IPv4 interfaces and `::` for all IPv6 interfaces) (default 0.0.0.0) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
 - cgroup-driver string
 
@@ -344,10 +220,6 @@ A detailed description of the command-line flag of kubelet
 
     Enable creation of QoS cgroup hierarchy, if true top level QoS and pod cgroups are created. (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- client-ca-file string
-
-    If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
 - cluster-dns strings
 
     Comma-separated list of DNS server IP address.  This value is used for containers DNS server in case of Pods with "dnsPolicy=ClusterFirst". Note: all DNS servers appearing in the list MUST serve the same set of records otherwise name resolution within the cluster may not work correctly. There is no guarantee as to which DNS server may be contacted for name resolution. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -356,10 +228,6 @@ A detailed description of the command-line flag of kubelet
 
     Domain for this cluster.  If set, kubelet will configure all containers to search this domain in addition to the host's search domains (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- container-hints string
-
-    location of the container hints file (default "/etc/cadvisor/container_hints.json") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
 - container-log-max-files int32
 
     <Warning: Beta feature> Set the maximum number of container log files that can be present for a container. The number must be >= 2. This flag can only be used with --container-runtime=remote. (default 5) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -367,10 +235,6 @@ A detailed description of the command-line flag of kubelet
 - container-log-max-size string
 
     <Warning: Beta feature> Set the maximum size (e.g. 10Mi) of container log file before it is rotated. This flag can only be used with --container-runtime=remote. (default "10Mi") (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- containerd string
-
-    containerd endpoint (default "unix:///var/run/containerd.sock") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
 
 - contention-profiling
 
@@ -388,38 +252,6 @@ A detailed description of the command-line flag of kubelet
 
     <Warning: Alpha feature> CPU Manager reconciliation period. Examples: '10s', or '1m'. If not supplied, defaults to NodeStatusUpdateFrequency (default 10s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- docker string
-
-    docker endpoint (default "unix:///var/run/docker.sock") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- docker-disable-shared-pid
-
-    Setting this to false causes Kubernetes to create pods using a shared process namespace for containers in a pod when running with Docker 1.13.1 or higher. A future Kubernetes release will make this configurable instead in the API. This docker-specific flag only works when container-runtime is set to docker. (default true) (DEPRECATED: will be removed in a future release. This option will be replaced by PID namespace sharing that is configurable per-pod using the API. See https://features.k8s.io/495)
-
-- docker-env-metadata-whitelist string
-
-    a comma-separated list of environment variable keys that needs to be collected for docker containers (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- docker-only
-
-    Only report docker containers in addition to root stats (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- docker-tls
-
-    use TLS to connect to docker (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- docker-tls-ca string
-
-    path to trusted CA (default "ca.pem") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- docker-tls-cert string
-
-    path to client certificate (default "cert.pem") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- docker-tls-key string
-
-    path to private key (default "key.pem") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
 - enable-controller-attach-detach
 
     Enables the Attach/Detach controller to manage attachment/detachment of volumes scheduled to this node, and disables kubelet from executing any attach/detach operations (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -427,10 +259,6 @@ A detailed description of the command-line flag of kubelet
 - enable-debugging-handlers
 
     Enables server endpoints for log collection and local running of containers and commands (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- enable-load-reader
-
-    Whether to enable cpu load reader (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
 
 - enforce-node-allocatable strings
 
@@ -443,14 +271,6 @@ A detailed description of the command-line flag of kubelet
 - event-qps int32
 
     If > 0, limit event creations per second to this value. If 0, unlimited. (default 5) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- event-storage-age-limit string
-
-    Max length of time for which to store events (per type). Value is a comma separated list of key values, where the keys are event types (e.g.: creation, oom) or "default" and the value is a duration. Default is applied to all non-specified event types (default "default=0") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- event-storage-event-limit string
-
-    Max number of events to store (per type). Value is a comma separated list of key values, where the keys are event types (e.g.: creation, oom) or "default" and the value is an integer. Default is applied to all non-specified event types (default "default=0") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
 
 - eviction-hard mapStringString
 
@@ -488,73 +308,69 @@ A detailed description of the command-line flag of kubelet
 
     A set of key=value pairs that describe feature gates for alpha/experimental features. Options are:
 ```
-                APIListChunking=true|false (BETA - default=true)
-                APIResponseCompression=true|false (ALPHA - default=false)
-                AdvancedAuditing=true|false (BETA - default=true)
-                AllAlpha=true|false (ALPHA - default=false)
-                AppArmor=true|false (BETA - default=true)
-                AttachVolumeLimit=true|false (ALPHA - default=false)
-                BalanceAttachedNodeVolumes=true|false (ALPHA - default=false)
-                BlockVolume=true|false (ALPHA - default=false)
-                CPUManager=true|false (BETA - default=true)
-                CRIContainerLogRotation=true|false (BETA - default=true)
-                CSIBlockVolume=true|false (ALPHA - default=false)
-                CSIPersistentVolume=true|false (BETA - default=true)
-                CustomPodDNS=true|false (BETA - default=true)
-                CustomResourceSubresources=true|false (BETA - default=true)
-                CustomResourceValidation=true|false (BETA - default=true)
-                DebugContainers=true|false (ALPHA - default=false)
-                DevicePlugins=true|false (BETA - default=true)
-                DynamicKubeletConfig=true|false (BETA - default=true)
-                DynamicProvisioningScheduling=true|false (ALPHA - default=false)
-                EnableEquivalenceClassCache=true|false (ALPHA - default=false)
-                ExpandInUsePersistentVolumes=true|false (ALPHA - default=false)
-                ExpandPersistentVolumes=true|false (BETA - default=true)
-                ExperimentalCriticalPodAnnotation=true|false (ALPHA - default=false)
-                ExperimentalHostUserNamespaceDefaulting=true|false (BETA - default=false)
-                GCERegionalPersistentDisk=true|false (BETA - default=true)
-                HugePages=true|false (BETA - default=true)
-                HyperVContainer=true|false (ALPHA - default=false)
-                Initializers=true|false (ALPHA - default=false)
-                KubeletPluginsWatcher=true|false (ALPHA - default=false)
-                LocalStorageCapacityIsolation=true|false (BETA - default=true)
-                MountContainers=true|false (ALPHA - default=false)
-                MountPropagation=true|false (BETA - default=true)
-                PersistentLocalVolumes=true|false (BETA - default=true)
-                PodPriority=true|false (BETA - default=true)
-                PodReadinessGates=true|false (BETA - default=false)
-                PodShareProcessNamespace=true|false (ALPHA - default=false)
-                QOSReserved=true|false (ALPHA - default=false)
-                ReadOnlyAPIDataVolumes=true|false (DEPRECATED - default=true)
-                ResourceLimitsPriorityFunction=true|false (ALPHA - default=false)
-                ResourceQuotaScopeSelectors=true|false (ALPHA - default=false)
-                RotateKubeletClientCertificate=true|false (BETA - default=true)
-                RotateKubeletServerCertificate=true|false (ALPHA - default=false)
-                RunAsGroup=true|false (ALPHA - default=false)
-                ScheduleDaemonSetPods=true|false (ALPHA - default=false)
-                ServiceNodeExclusion=true|false (ALPHA - default=false)
-                ServiceProxyAllowExternalIPs=true|false (DEPRECATED - default=false)
-                StorageObjectInUseProtection=true|false (default=true)
-                StreamingProxyRedirects=true|false (BETA - default=true)
-                SupportIPVSProxyMode=true|false (default=true)
-                SupportPodPidsLimit=true|false (ALPHA - default=false)
-                Sysctls=true|false (BETA - default=true)
-                TaintBasedEvictions=true|false (ALPHA - default=false)
-                TaintNodesByCondition=true|false (ALPHA - default=false)
-                TokenRequest=true|false (ALPHA - default=false)
-                TokenRequestProjection=true|false (ALPHA - default=false)
-                VolumeScheduling=true|false (BETA - default=true)
-                VolumeSubpath=true|false (default=true)
-                VolumeSubpathEnvExpansion=true|false (ALPHA - default=false) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+APIListChunking=true|false (BETA - default=true)
+APIResponseCompression=true|false (ALPHA - default=false)
+AdvancedAuditing=true|false (BETA - default=true)
+AllAlpha=true|false (ALPHA - default=false)
+AppArmor=true|false (BETA - default=true)
+AttachVolumeLimit=true|false (ALPHA - default=false)
+BalanceAttachedNodeVolumes=true|false (ALPHA - default=false)
+BlockVolume=true|false (ALPHA - default=false)
+CPUManager=true|false (BETA - default=true)
+CRIContainerLogRotation=true|false (BETA - default=true)
+CSIBlockVolume=true|false (ALPHA - default=false)
+CSIPersistentVolume=true|false (BETA - default=true)
+CustomPodDNS=true|false (BETA - default=true)
+CustomResourceSubresources=true|false (BETA - default=true)
+CustomResourceValidation=true|false (BETA - default=true)
+DebugContainers=true|false (ALPHA - default=false)
+DevicePlugins=true|false (BETA - default=true)
+DynamicKubeletConfig=true|false (BETA - default=true)
+DynamicProvisioningScheduling=true|false (ALPHA - default=false)
+EnableEquivalenceClassCache=true|false (ALPHA - default=false)
+ExpandInUsePersistentVolumes=true|false (ALPHA - default=false)
+ExpandPersistentVolumes=true|false (BETA - default=true)
+ExperimentalCriticalPodAnnotation=true|false (ALPHA - default=false)
+ExperimentalHostUserNamespaceDefaulting=true|false (BETA - default=false)
+GCERegionalPersistentDisk=true|false (BETA - default=true)
+HugePages=true|false (BETA - default=true)
+HyperVContainer=true|false (ALPHA - default=false)
+Initializers=true|false (ALPHA - default=false)
+KubeletPluginsWatcher=true|false (ALPHA - default=false)
+LocalStorageCapacityIsolation=true|false (BETA - default=true)
+MountContainers=true|false (ALPHA - default=false)
+MountPropagation=true|false (BETA - default=true)
+PersistentLocalVolumes=true|false (BETA - default=true)
+PodPriority=true|false (BETA - default=true)
+PodReadinessGates=true|false (BETA - default=false)
+PodShareProcessNamespace=true|false (ALPHA - default=false)
+QOSReserved=true|false (ALPHA - default=false)
+ReadOnlyAPIDataVolumes=true|false (DEPRECATED - default=true)
+ResourceLimitsPriorityFunction=true|false (ALPHA - default=false)
+ResourceQuotaScopeSelectors=true|false (ALPHA - default=false)
+RotateKubeletClientCertificate=true|false (BETA - default=true)
+RotateKubeletServerCertificate=true|false (ALPHA - default=false)
+RunAsGroup=true|false (ALPHA - default=false)
+ScheduleDaemonSetPods=true|false (ALPHA - default=false)
+ServiceNodeExclusion=true|false (ALPHA - default=false)
+ServiceProxyAllowExternalIPs=true|false (DEPRECATED - default=false)
+StorageObjectInUseProtection=true|false (default=true)
+StreamingProxyRedirects=true|false (BETA - default=true)
+SupportIPVSProxyMode=true|false (default=true)
+SupportPodPidsLimit=true|false (ALPHA - default=false)
+Sysctls=true|false (BETA - default=true)
+TaintBasedEvictions=true|false (ALPHA - default=false)
+TaintNodesByCondition=true|false (ALPHA - default=false)
+TokenRequest=true|false (ALPHA - default=false)
+TokenRequestProjection=true|false (ALPHA - default=false)
+VolumeScheduling=true|false (BETA - default=true)
+VolumeSubpath=true|false (default=true)
+VolumeSubpathEnvExpansion=true|false (ALPHA - default=false) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 ```
 
 - file-check-frequency duration
 
     Duration between checking config files for new data (default 20s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- global-housekeeping-interval duration
-
-    Interval between global housekeepings (default 1m0s) (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
 
 - hairpin-mode string
 
@@ -567,18 +383,6 @@ A detailed description of the command-line flag of kubelet
 - healthz-port int32
 
     The port of the localhost healthz endpoint (set to 0 to disable) (default 10248) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- host-ipc-sources strings
-
-    Comma-separated list of sources from which the Kubelet allows pods to use the host ipc namespace. (default [*]) (DEPRECATED: will be removed in a future version)
-
-- host-network-sources strings
-
-    Comma-separated list of sources from which the Kubelet allows pods to use of host network. (default [*]) (DEPRECATED: will be removed in a future version)
-
-- host-pid-sources strings
-
-    Comma-separated list of sources from which the Kubelet allows pods to use the host pid namespace. (default [*]) (DEPRECATED: will be removed in a future version)
 
 - http-check-frequency duration
 
@@ -599,10 +403,6 @@ A detailed description of the command-line flag of kubelet
 - iptables-masquerade-bit int32
 
     The bit of the fwmark space to mark packets for SNAT. Must be within the range [0, 31]. Please match this parameter with corresponding parameter in kube-proxy. (default 14) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- keep-terminated-pod-volumes
-
-    Keep terminated pod volumes mounted to the node after the pod terminates.  Can be useful for debugging volume related issues. (DEPRECATED: will be removed in a future version)
 
 - kube-api-burst int32
 
@@ -628,14 +428,6 @@ A detailed description of the command-line flag of kubelet
 
     Optional absolute name of cgroups to create and run the Kubelet in. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- log-cadvisor-usage
-
-    Whether to log the usage of the cAdvisor container (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- machine-id-file string
-
-    Comma-separated list of files to check for machine-id. Use the first one that exists. (default "/etc/machine-id,/var/lib/dbus/machine-id") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
 - make-iptables-util-chains
 
     If true, kubelet will ensure iptables utility rules are present on host. (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -648,10 +440,6 @@ A detailed description of the command-line flag of kubelet
 
     Comma-separated list of HTTP headers to use when accessing the url provided to --manifest-url. Multiple headers with the same name will be added in the same order provided. This flag can be repeatedly invoked. For example: --manifest-url-header 'a:hello,b:again,c:world' --manifest-url-header 'b:beautiful' (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- master-service-namespace string
-
-    The namespace from which the kubernetes master services should be injected into pods (default "default") (DEPRECATED: This flag will be removed in a future version.)
-
 - max-open-files int
 
     Number of files that can be opened by Kubelet process. (default 1000000) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -660,33 +448,13 @@ A detailed description of the command-line flag of kubelet
 
     Number of Pods that can run on this Kubelet. (default 110) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- maximum-dead-containers int32
-
-    Maximum number of old instances of containers to retain globally.  Each container takes up some disk space. To disable, set to a negative number. (default -1) (DEPRECATED: Use --eviction-hard or --eviction-soft instead. Will be removed in a future version.)
-
-- maximum-dead-containers-per-container int32
-
-    Maximum number of old instances to retain per container.  Each container takes up some disk space. (default 1) (DEPRECATED: Use --eviction-hard or --eviction-soft instead. Will be removed in a future version.)
-
-- minimum-container-ttl-duration duration
-
-    Minimum age for a finished container before it is garbage collected.  Examples: '300ms', '10s' or '2h45m' (DEPRECATED: Use --eviction-hard or --eviction-soft instead. Will be removed in a future version.)
-
 - minimum-image-ttl-duration duration
 
     Minimum age for an unused image before it is garbage collected.  Examples: '300ms', '10s' or '2h45m'. (default 2m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- node-status-max-images int32
-
-    <Warning: Alpha feature> The maximum number of images to report in Node.Status.Images. If -1 is specified, no cap will be applied. Default: 50 (default 50)
-
 - node-status-update-frequency duration
 
     Specifies how often kubelet posts node status to master. Note: be cautious when changing the constant, it must work with nodeMonitorGracePeriod in nodecontroller. (default 10s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- non-masquerade-cidr string
-
-    Traffic to IPs outside this range will use IP masquerade. Set to '0.0.0.0/0' to never masquerade. (default "10.0.0.0/8") (DEPRECATED: will be removed in a future version)
 
 - oom-score-adj int32
 
@@ -724,14 +492,6 @@ A detailed description of the command-line flag of kubelet
 
     The read-only port for the Kubelet to serve on with no authentication/authorization (set to 0 to disable) (default 10255) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
-- redirect-container-streaming
-
-    Enables container streaming redirect. If false, kubelet will proxy container streaming data between apiserver and container runtime; if true, kubelet will return an http redirect to apiserver, and apiserver will access container runtime directly. The proxy approach is more secure, but introduces some overhead. The redirect approach is more performant, but less secure because the connection between apiserver and container runtime may not be authenticated.
-
-- register-schedulable
-
-    Register the node as schedulable. Won't have any effect if register-node is false. (default true) (DEPRECATED: will be removed in a future version)
-
 - registry-burst int32
 
     Maximum size of a bursty pulls, temporarily allows pulls to burst to this number, while still not exceeding registry-qps. Only used if --registry-qps > 0 (default 10) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -744,6 +504,10 @@ A detailed description of the command-line flag of kubelet
 
     Resolver configuration file used as the basis for the container DNS resolution configuration. (default "/etc/resolv.conf") (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
 
+- rotate-certificates
+
+    <Warning: Beta feature> Auto rotate the kubelet client certificates by requesting new certificates from the kube-apiserver when the certificate expiration approaches. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
 - runtime-request-timeout duration
 
     Timeout of all runtime requests except long running request - pull, logs, exec and attach. When timeout exceeded, kubelet will cancel the request, throw out an error and retry later. (default 2m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
@@ -751,34 +515,6 @@ A detailed description of the command-line flag of kubelet
 - serialize-image-pulls
 
     Pull images one at a time. We recommend *not* changing the default value on nodes that run docker daemon with version < 1.9 or an Aufs storage backend. Issue #10959 has more details. (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
-
-- storage-driver-buffer-duration duration
-
-    Writes in the storage driver will be buffered for this duration, and committed to the non memory backends as a single transaction (default 1m0s) (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- storage-driver-db string
-
-    database name (default "cadvisor") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- storage-driver-host string
-
-    database host:port (default "localhost:8086") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- storage-driver-password string
-
-    database password (default "root") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- storage-driver-secure
-
-    use secure connection with database (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- storage-driver-table string
-
-    table name (default "stats") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
-
-- storage-driver-user string
-
-    database username (default "root") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
 
 - streaming-connection-idle-timeout duration
 
@@ -819,4 +555,268 @@ A detailed description of the command-line flag of kubelet
 - volume-stats-agg-period duration
 
     Specifies interval for kubelet to calculate and cache the volume disk usage for all pods and volumes.  To disable volume calculations, set to 0. (default 1m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+
+
+### KubeletConfig.Authentication
+
+- anonymous-auth
+
+    Enables anonymous requests to the Kubelet server. Requests that are not rejected by another authentication method are treated as anonymous requests. Anonymous requests have a username of system:anonymous, and a group name of system:unauthenticated. (default true) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+- authentication-token-webhook
+
+    Use the TokenReview API to determine authentication for bearer tokens. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+- authentication-token-webhook-cache-ttl duration
+
+    The duration to cache responses from the webhook token authenticator. (default 2m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+- client-ca-file string
+
+    If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate. (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+
+
+### KubeletConfig.Authorization
+
+- authorization-mode string
+
+    Authorization mode for Kubelet server. Valid options are AlwaysAllow or Webhook. Webhook mode uses the SubjectAccessReview API to determine authorization. (default "AlwaysAllow") (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+- authorization-webhook-cache-authorized-ttl duration
+
+    The duration to cache 'authorized' responses from the webhook authorizer. (default 5m0s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+- authorization-webhook-cache-unauthorized-ttl duration
+
+    The duration to cache 'unauthorized' responses from the webhook authorizer. (default 30s) (DEPRECATED: This parameter should be set via the config file specified by the Kubelet's --config flag. See https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/ for more information.)
+
+
+
+### Node
+
+- hostname-override string
+
+    If non-empty, will use this string as identification instead of the actual hostname. If --cloud-provider is set, the cloud provider determines the name of the node (consult cloud provider documentation to determine if and how the hostname is used).
+
+- node-ip string
+
+    IP address of the node. If set, kubelet will use this IP address for the node
+
+- node-labels mapStringString
+
+    <Warning: Alpha feature> Labels to add when registering the node in the cluster.  Labels must be key=value pairs separated by ','.
+
+- register-node
+
+    Register the node with the apiserver. If --kubeconfig is not provided, this flag is irrelevant, as the Kubelet won't have an apiserver to register with. Default=true. (default true)
+
+- register-with-taints []api.Taint
+
+    Register the node with the given list of taints (comma separated "<key>=<value>:<effect>"). No-op if register-node is false.
+
+
+
+### Serving
+
+- containerized
+
+    Running kubelet in a container.
+
+- enable-server
+
+    Enable the Kubelet's server (default true)
+
+- runonce
+
+    If true, exit after spawning pods from static pod files or remote urls. Exclusive with --enable-server
+
+
+
+### Test
+
+- chaos-chance float
+
+    If > 0.0, introduce random client errors and latency. Intended for testing.
+
+- really-crash-for-testing
+
+    If true, when panics occur crash. Intended for testing.
+
+
+
+### cloud
+
+- azure-container-registry-config string
+
+    Path to the file containing Azure container registry configuration information.
+
+- cloud-config string
+
+    The path to the cloud provider configuration file.  Empty string for no configuration file.
+
+- cloud-provider string
+
+    The provider for cloud services. Specify empty string for running with no cloud provider. If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine if and how the hostname is used).
+
+- provider-id string
+
+    Unique identifier for identifying the node in a machine database, i.e cloudprovider
+
+
+
+### general
+
+- help
+
+    help for kubelet
+
+- log-flush-frequency duration
+
+    Maximum number of seconds between log flushes (default 5s)
+
+- version version[=true]
+
+    Print version information and quit
+
+
+
+### vendor.cadvisor
+
+- application-metrics-count-limit int
+
+    Max number of application metrics to store (per container) (default 100) (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- boot-id-file string
+
+    Comma-separated list of files to check for boot-id. Use the first one that exists. (default "/proc/sys/kernel/random/boot_id") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- container-hints string
+
+    location of the container hints file (default "/etc/cadvisor/container_hints.json") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- containerd string
+
+    containerd endpoint (default "unix:///var/run/containerd.sock") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker string
+
+    docker endpoint (default "unix:///var/run/docker.sock") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker-env-metadata-whitelist string
+
+    a comma-separated list of environment variable keys that needs to be collected for docker containers (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker-only
+
+    Only report docker containers in addition to root stats (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker-root string
+
+    DEPRECATED: docker root is read from docker info (this is a fallback, default: /var/lib/docker) (default "/var/lib/docker")
+
+- docker-tls
+
+    use TLS to connect to docker (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker-tls-ca string
+
+    path to trusted CA (default "ca.pem") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker-tls-cert string
+
+    path to client certificate (default "cert.pem") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- docker-tls-key string
+
+    path to private key (default "key.pem") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- enable-load-reader
+
+    Whether to enable cpu load reader (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- event-storage-age-limit string
+
+    Max length of time for which to store events (per type). Value is a comma separated list of key values, where the keys are event types (e.g.: creation, oom) or "default" and the value is a duration. Default is applied to all non-specified event types (default "default=0") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- event-storage-event-limit string
+
+    Max number of events to store (per type). Value is a comma separated list of key values, where the keys are event types (e.g.: creation, oom) or "default" and the value is an integer. Default is applied to all non-specified event types (default "default=0") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- global-housekeeping-interval duration
+
+    Interval between global housekeepings (default 1m0s) (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- housekeeping-interval duration
+
+    Interval between container housekeepings (default 10s)
+
+- log-cadvisor-usage
+
+    Whether to log the usage of the cAdvisor container (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- machine-id-file string
+
+    Comma-separated list of files to check for machine-id. Use the first one that exists. (default "/etc/machine-id,/var/lib/dbus/machine-id") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-buffer-duration duration
+
+    Writes in the storage driver will be buffered for this duration, and committed to the non memory backends as a single transaction (default 1m0s) (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-db string
+
+    database name (default "cadvisor") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-host string
+
+    database host:port (default "localhost:8086") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-password string
+
+    database password (default "root") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-secure
+
+    use secure connection with database (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-table string
+
+    table name (default "stats") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+- storage-driver-user string
+
+    database username (default "root") (DEPRECATED: This is a cadvisor flag that was mistakenly registered with the Kubelet. Due to legacy concerns, it will follow the standard CLI deprecation timeline before being removed.)
+
+
+
+### vendor.glog
+
+- alsologtostderr
+
+    log to standard error as well as files
+
+- log-backtrace-at traceLocation
+
+    when logging hits line file:N, emit a stack trace (default :0)
+
+- log-dir string
+
+    If non-empty, write log files in this directory
+
+- logtostderr
+
+    log to standard error instead of files (default true)
+
+- stderrthreshold severity
+
+    logs at or above this threshold go to stderr (default 2)
+
+- v Level
+
+    log level for V logs
+
+- vmodule moduleSpec
+
+    comma-separated list of pattern=N settings for file-filtered logging
 
