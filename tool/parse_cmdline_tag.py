@@ -14,12 +14,22 @@ class Flag(object):
         self.tag = None
 
 
-def parse(ss, first_gap, second_gap):
+p1 = re.compile("--")
+p2 = re.compile("  \S")
+p3 = re.compile("^\s*-")
+
+
+def parse2(ss):
     flags = []
     with open(ss) as ff:
         for line in ff:
-            prefix = line[:first_gap]
-            if prefix in ["      --", "  -v, --", "  -h, --"]:
+            if not line.startswith(" "):
+                continue
+
+            if p3.match(line):
+                first_gap = p1.search(line).end()
+                second_gap = p2.search(line, 10).end() - 1
+                # print(first_gap, second_gap)
                 explanation = line[second_gap:].strip()
                 keyline = line[first_gap:second_gap].strip().split()
                 if len(keyline) == 1:
@@ -34,8 +44,10 @@ def parse(ss, first_gap, second_gap):
             elif len(flags) > 0 and flags[-1].name in SPEC_NAME:
                 flags[-1].ext += line
             else:
-                print(line)
-                raise SyntaxError
+                # print(line)
+                # print(prefix)
+                # raise SyntaxError
+                pass
 
     return flags
 
@@ -55,9 +67,9 @@ def get_flag_map(ss):
     return flag_map
 
 
-def process(old_md, new_md, new_flagf, flag_gap, title=None):
+def process(old_md, new_md, new_flagf, title=None):
 
-    flags = parse(new_flagf, flag_gap[0], flag_gap[1])
+    flags = parse2(new_flagf)
 
     flag_map = get_flag_map(old_md)
 
@@ -70,8 +82,8 @@ def process(old_md, new_md, new_flagf, flag_gap, title=None):
         tag_map[item.tag].append(item)
 
     if "uncategorized" in tag_map:
-        print("--->>>  Has Uncategorized Tag: ", ' '.join(
-            item.name for item in tag_map["uncategorized"]))
+        print("--->>>  Has Uncategorized Tag: ",
+              ' '.join(item.name for item in tag_map["uncategorized"]))
 
     ## write new_md file
     with open(new_md, "w") as ff:
@@ -97,14 +109,6 @@ def process(old_md, new_md, new_flagf, flag_gap, title=None):
                 ff.write("\n")
 
 
-def find_gap(fname):
-    p1 = re.compile("--")
-    p2 = re.compile("  \S")
-    with open(fname) as ff:
-        line = ff.read()
-        return p1.search(line).end(), p2.search(line, 10).end() - 1
-
-
 if __name__ == '__main__':
 
     NL = [
@@ -112,11 +116,9 @@ if __name__ == '__main__':
     ]
 
     for name in NL:
-        old_md = "./tmp/v1.11.0.a/%s.md" % (name)
-        new_md = "./tmp/v1.11.0.b/%s.md" % (name)
+        old_md = "./tmp/v1.12.3-tofix/%s.md" % (name)
+        new_md = "./tmp/v1.12.3/%s.md" % (name)
         flagf = "./tmp/origin/%s.flag" % (name)
         title = "A detailed description of the command-line flag of %s" % (
             name)
-        gap = find_gap(flagf)
-        print(name, gap)
-        process(old_md, new_md, flagf, gap, title)
+        process(old_md, new_md, flagf, title)

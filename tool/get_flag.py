@@ -18,7 +18,7 @@ def get_flag(image, cmd_name, fname, fpath, from_stdout=True):
         for line in kkk:
             if output:
                 ff.write(line)
-            elif line.startswith("Available Flags") or line.startswith("Flags"):
+            elif line.startswith("Available Flags") or line.startswith("Flags") or line.startswith("Generic flags"):
                 output = True
 
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
         "kube-proxy.flag": "/proxy",
     }
 
-    image = "gcr.io/google-containers/hyperkube:v1.11.0-rc.1"
+    image = "gcr.io/google-containers/hyperkube:v1.12.3"
     fpath = "./tmp/origin"
     for fname, cmd_name in ND.items():
         print(fname)
