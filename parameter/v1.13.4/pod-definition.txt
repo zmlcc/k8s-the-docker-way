@@ -1,0 +1,75 @@
+v1.Pod{
+  TypeMeta: v1.TypeMeta{
+    Kind: "",
+    APIVersion: ""
+  },
+  ObjectMeta: v1.ObjectMeta{
+    Name: "",
+    GenerateName: "",
+    Namespace: "",
+    SelfLink: "",
+    UID: "",
+    ResourceVersion: "",
+    Generation: 0,
+    CreationTimestamp: v1.Time{
+      Time: time.Time{
+        wall: 0x0,
+        ext: 0,
+        loc: (*time.Location)(nil)
+      }
+    },
+    DeletionTimestamp: (*v1.Time)(nil),
+    DeletionGracePeriodSeconds: (*int64)(nil),
+    Labels: map[string]string(nil),
+    Annotations: map[string]string(nil),
+    OwnerReferences: []v1.OwnerReference(nil),
+    Initializers: (*v1.Initializers)(nil),
+    Finalizers: []string(nil),
+    ClusterName: ""
+  },
+  Spec: v1.PodSpec{
+    Volumes: []v1.Volume(nil),
+    InitContainers: []v1.Container(nil),
+    Containers: []v1.Container(nil),
+    RestartPolicy: "",
+    TerminationGracePeriodSeconds: (*int64)(nil),
+    ActiveDeadlineSeconds: (*int64)(nil),
+    DNSPolicy: "",
+    NodeSelector: map[string]string(nil),
+    ServiceAccountName: "",
+    DeprecatedServiceAccount: "",
+    AutomountServiceAccountToken: (*bool)(nil),
+    NodeName: "",
+    HostNetwork: false,
+    HostPID: false,
+    HostIPC: false,
+    ShareProcessNamespace: (*bool)(nil),
+    SecurityContext: (*v1.PodSecurityContext)(nil),
+    ImagePullSecrets: []v1.LocalObjectReference(nil),
+    Hostname: "",
+    Subdomain: "",
+    Affinity: (*v1.Affinity)(nil),
+    SchedulerName: "",
+    Tolerations: []v1.Toleration(nil),
+    HostAliases: []v1.HostAlias(nil),
+    PriorityClassName: "",
+    Priority: (*int32)(nil),
+    DNSConfig: (*v1.PodDNSConfig)(nil),
+    ReadinessGates: []v1.PodReadinessGate(nil),
+    RuntimeClassName: (*string)(nil),
+    EnableServiceLinks: (*bool)(nil)
+  },
+  Status: v1.PodStatus{
+    Phase: "",
+    Conditions: []v1.PodCondition(nil),
+    Message: "",
+    Reason: "",
+    NominatedNodeName: "",
+    HostIP: "",
+    PodIP: "",
+    StartTime: (*v1.Time)(nil),
+    InitContainerStatuses: []v1.ContainerStatus(nil),
+    ContainerStatuses: []v1.ContainerStatus(nil),
+    QOSClass: ""
+  }
+}

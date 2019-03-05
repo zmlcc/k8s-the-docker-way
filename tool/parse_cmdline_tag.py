@@ -73,7 +73,7 @@ def process(old_md, new_md, new_flagf, title=None):
 
     flag_map = get_flag_map(old_md)
 
-    ## merge tag
+    # merge tag
     for flag in flags:
         flag.tag = flag_map.get(flag.name, "uncategorized")
 
@@ -85,7 +85,7 @@ def process(old_md, new_md, new_flagf, title=None):
         print("--->>>  Has Uncategorized Tag: ",
               ' '.join(item.name for item in tag_map["uncategorized"]))
 
-    ## write new_md file
+    # write new_md file
     with open(new_md, "w") as ff:
         if title is None:
             ff.write("A detailed description of the command-line flag\n\n")
@@ -116,8 +116,8 @@ if __name__ == '__main__':
     ]
 
     for name in NL:
-        old_md = "./tmp/v1.12.3-tofix/%s.md" % (name)
-        new_md = "./tmp/v1.12.3/%s.md" % (name)
+        old_md = "./tmp/v1.13.4-1/%s.md" % (name)
+        new_md = "./tmp/v1.13.4-2/%s.md" % (name)
         flagf = "./tmp/origin/%s.flag" % (name)
         title = "A detailed description of the command-line flag of %s" % (
             name)

@@ -10,7 +10,6 @@ def gen_config(image, cmd_name, fname, fpath, from_stdout=True):
     subprocess.run(cmd, shell=True)
 
 
-
 if __name__ == '__main__':
 
     ND = {
@@ -18,7 +17,7 @@ if __name__ == '__main__':
         "kube-proxy.cfg": "/proxy",
     }
 
-    image = "gcr.io/google-containers/hyperkube:v1.12.3"
+    image = "gcr.io/google-containers/hyperkube-amd64:v1.13.4"
     fpath = "./tmp/origin"
     for fname, cmd_name in ND.items():
         print(fname)
