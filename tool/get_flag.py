@@ -27,14 +27,14 @@ def get_flag(image, cmd_name, fname, fpath, from_stdout=True):
 if __name__ == '__main__':
 
     ND = {
-        "apiserver.flag": "/apiserver",
-        "controller-manager.flag": "/controller-manager",
-        "scheduler.flag": "/scheduler",
-        "kubelet.flag": "/kubelet",
-        "kube-proxy.flag": "/proxy",
+        "apiserver.flag": "/hyperkube kube-apiserver",
+        "controller-manager.flag": "/hyperkube kube-controller-manager",
+        "scheduler.flag": "/hyperkube kube-scheduler",
+        "kubelet.flag": "/hyperkube kubelet",
+        "kube-proxy.flag": "/hyperkube kube-proxy",
     }
 
-    image = "gcr.io/google-containers/hyperkube-amd64:v1.14.4"
+    image = "gcr.io/google-containers/hyperkube-amd64:v1.15.5"
     fpath = "./tmp/origin"
     for fname, cmd_name in ND.items():
         print(fname)

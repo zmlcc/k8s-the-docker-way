@@ -13,11 +13,11 @@ def gen_config(image, cmd_name, fname, fpath, from_stdout=True):
 if __name__ == '__main__':
 
     ND = {
-        "scheduler.cfg": "/scheduler",
-        "kube-proxy.cfg": "/proxy",
+        "scheduler.cfg": "/hyperkube kube-scheduler",
+        "kube-proxy.cfg": "/hyperkube kube-proxy",
     }
 
-    image = "gcr.io/google-containers/hyperkube-amd64:v1.14.4"
+    image = "gcr.io/google-containers/hyperkube-amd64:v1.15.5"
     fpath = "./tmp/origin"
     for fname, cmd_name in ND.items():
         print(fname)

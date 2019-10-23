@@ -116,8 +116,8 @@ if __name__ == '__main__':
     ]
 
     for name in NL:
-        old_md = "./tmp/v1.14.4-1/%s.md" % (name)
-        new_md = "./tmp/v1.14.4-2/%s.md" % (name)
+        old_md = "./tmp/v1.15.5-1/%s.md" % (name)
+        new_md = "./tmp/v1.15.5-2/%s.md" % (name)
         flagf = "./tmp/origin/%s.flag" % (name)
         title = "A detailed description of the command-line flag of %s" % (
             name)
